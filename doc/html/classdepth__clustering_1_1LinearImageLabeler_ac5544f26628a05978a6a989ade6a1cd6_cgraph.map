@@ -1,0 +1,8 @@
+<map id="depth_clustering::LinearImageLabeler::LabelOneComponent" name="depth_clustering::LinearImageLabeler::LabelOneComponent">
+<area shape="rect" id="node2" href="$classdepth__clustering_1_1LinearImageLabeler.html#a12c62dd4c7a8e58dad23e7c0d0efbade" title="Gets label of a given pixel. " alt="" coords="293,5,453,46"/>
+<area shape="rect" id="node3" href="$classdepth__clustering_1_1LinearImageLabeler.html#a4693e920b2245f70206a11e141ddcb8f" title="Sets label of a given pixel. " alt="" coords="293,70,453,111"/>
+<area shape="rect" id="node4" href="$classdepth__clustering_1_1LinearImageLabeler.html#a5fc990c42e9e017c7b5a949bf00010e5" title="Gets depth value at pixel. " alt="" coords="293,135,453,177"/>
+<area shape="rect" id="node5" href="$classdepth__clustering_1_1LinearImageLabeler.html#a327b973bb85e30ce0a33c1e175d3bcb1" title="Wrap columns around image. " alt="" coords="290,201,457,242"/>
+<area shape="rect" id="node6" href="$classdepth__clustering_1_1AbstractDiff.html#a06ba188d8d83d0e4bad66c833656c26d" title="Gets diff between pixels from and to. " alt="" coords="286,266,461,307"/>
+<area shape="rect" id="node7" href="$classdepth__clustering_1_1AbstractDiff.html#a940280569ed86d8f7e95626b1a2312d7" title="Does the difference satisfy a threshold? " alt="" coords="286,331,461,373"/>
+</map>

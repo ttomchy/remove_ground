@@ -1,0 +1,6 @@
+<map id="depth_clustering::ProjectionParams::AngleFromRow" name="depth_clustering::ProjectionParams::AngleFromRow">
+<area shape="rect" id="node2" href="$classdepth__clustering_1_1AngleDiffPrecomputed.html#a8f333b5196e9dcaa7923f82d362c7281" title="Pre&#45;compute values for angles for all cols and rows. " alt="" coords="248,5,491,46"/>
+<area shape="rect" id="node3" href="$classdepth__clustering_1_1LineDistDiffPrecomputed.html#a9e52e2a94d9f92567953a765475d62a0" title="Pre&#45;compute values for angles for all cols and rows. " alt="" coords="237,70,501,111"/>
+<area shape="rect" id="node4" href="$classdepth__clustering_1_1CloudProjection.html#a684ca31033ee3b6b9d0ba2ea86d6e5b9" title="Unproject a point from depth image coordinate. " alt="" coords="261,135,478,177"/>
+<area shape="rect" id="node5" href="$classdepth__clustering_1_1RingProjection.html#a16cbf43e541e65560cb282c560b4efa7" title="Unproject a point from depth image coordinate. " alt="" coords="549,135,760,177"/>
+</map>

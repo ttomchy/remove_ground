@@ -1,0 +1,255 @@
+\hypertarget{classdepth__clustering_1_1CloudProjection}{\section{depth\-\_\-clustering\-:\-:Cloud\-Projection Class Reference}
+\label{classdepth__clustering_1_1CloudProjection}\index{depth\-\_\-clustering\-::\-Cloud\-Projection@{depth\-\_\-clustering\-::\-Cloud\-Projection}}
+}
+
+
+Abstract class for cloud projection.  
+
+
+
+
+{\ttfamily \#include $<$cloud\-\_\-projection.\-h$>$}
+
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{classdepth__clustering_1_1CloudProjection_1_1PointContainer}{Point\-Container}
+\begin{DoxyCompactList}\small\item\em Class for point container. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum {\bfseries Type} \{ {\bfseries S\-P\-H\-E\-R\-I\-C\-A\-L}, 
+{\bfseries C\-Y\-L\-L\-I\-N\-D\-R\-I\-C\-A\-L}
+ \}
+\item 
+\hypertarget{classdepth__clustering_1_1CloudProjection_a7ac49f27b97e149be239a777587b4162}{using {\bfseries Ptr} = shared\-\_\-ptr$<$ \hyperlink{classdepth__clustering_1_1CloudProjection}{Cloud\-Projection} $>$}\label{classdepth__clustering_1_1CloudProjection_a7ac49f27b97e149be239a777587b4162}
+
+\item 
+\hypertarget{classdepth__clustering_1_1CloudProjection_aa7a2a7f37a6ebd5533e336e1f484567a}{using {\bfseries Const\-Ptr} = shared\-\_\-ptr$<$ const \hyperlink{classdepth__clustering_1_1CloudProjection}{Cloud\-Projection} $>$}\label{classdepth__clustering_1_1CloudProjection_aa7a2a7f37a6ebd5533e336e1f484567a}
+
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classdepth__clustering_1_1CloudProjection_a7abfd6e56bacd684379916af2ab60cef}{{\bfseries Cloud\-Projection} (const \hyperlink{classdepth__clustering_1_1ProjectionParams}{Projection\-Params} \&params)}\label{classdepth__clustering_1_1CloudProjection_a7abfd6e56bacd684379916af2ab60cef}
+
+\item 
+virtual void \hyperlink{classdepth__clustering_1_1CloudProjection_ad262ef9f4e0c9c7fab9cc37874ca72eb}{Init\-From\-Points} (const std\-::vector$<$ \hyperlink{classdepth__clustering_1_1RichPoint}{Rich\-Point} $>$ \&points)=0
+\begin{DoxyCompactList}\small\item\em Initialize from 3d points. \end{DoxyCompactList}\item 
+virtual Cloud\-Projection\-::\-Ptr \hyperlink{classdepth__clustering_1_1CloudProjection_ae06ff9699c1a37c535b39fa6f722fa2e}{Clone} () const =0
+\begin{DoxyCompactList}\small\item\em Polymorphic clone of a projection. \end{DoxyCompactList}\item 
+\hypertarget{classdepth__clustering_1_1CloudProjection_a5519c93050ed140d8baace3a625fd9ed}{const cv\-::\-Mat \& {\bfseries depth\-\_\-image} () const }\label{classdepth__clustering_1_1CloudProjection_a5519c93050ed140d8baace3a625fd9ed}
+
+\item 
+\hypertarget{classdepth__clustering_1_1CloudProjection_aa04e09c527c7e1bc1b5ab161c5931b30}{cv\-::\-Mat \& {\bfseries depth\-\_\-image} ()}\label{classdepth__clustering_1_1CloudProjection_aa04e09c527c7e1bc1b5ab161c5931b30}
+
+\item 
+\hypertarget{classdepth__clustering_1_1CloudProjection_a3e28dfda41fa497bfd54fe3c7f2a9b37}{void {\bfseries Clone\-Depth\-Image} (const cv\-::\-Mat \&image)}\label{classdepth__clustering_1_1CloudProjection_a3e28dfda41fa497bfd54fe3c7f2a9b37}
+
+\item 
+\hypertarget{classdepth__clustering_1_1CloudProjection_a41fe972471286f13a15167860a0d6fce}{size\-\_\-t {\bfseries rows} () const }\label{classdepth__clustering_1_1CloudProjection_a41fe972471286f13a15167860a0d6fce}
+
+\item 
+\hypertarget{classdepth__clustering_1_1CloudProjection_a777b6b7040065187e2ab19656078f1a2}{size\-\_\-t {\bfseries cols} () const }\label{classdepth__clustering_1_1CloudProjection_a777b6b7040065187e2ab19656078f1a2}
+
+\item 
+\hypertarget{classdepth__clustering_1_1CloudProjection_a64d4cdc9a3faedc42ae3b40b1fcbd5d2}{size\-\_\-t {\bfseries size} () const }\label{classdepth__clustering_1_1CloudProjection_a64d4cdc9a3faedc42ae3b40b1fcbd5d2}
+
+\item 
+\hypertarget{classdepth__clustering_1_1CloudProjection_a8ce8f68e2f29d6cd4dbfda1a7bee6c13}{const \hyperlink{classdepth__clustering_1_1ProjectionParams}{Projection\-Params} \& {\bfseries params} () const }\label{classdepth__clustering_1_1CloudProjection_a8ce8f68e2f29d6cd4dbfda1a7bee6c13}
+
+\item 
+\hypertarget{classdepth__clustering_1_1CloudProjection_a5bb974dd99ff9e840d1c48b3d8a56fc8}{const \hyperlink{classdepth__clustering_1_1CloudProjection_1_1PointContainer}{Point\-Container} \& {\bfseries at} (const size\-\_\-t row, const size\-\_\-t col) const }\label{classdepth__clustering_1_1CloudProjection_a5bb974dd99ff9e840d1c48b3d8a56fc8}
+
+\item 
+\hypertarget{classdepth__clustering_1_1CloudProjection_a72001e572391d9fba69f2572ac6369f5}{\hyperlink{classdepth__clustering_1_1CloudProjection_1_1PointContainer}{Point\-Container} \& {\bfseries at} (const size\-\_\-t row, const size\-\_\-t col)}\label{classdepth__clustering_1_1CloudProjection_a72001e572391d9fba69f2572ac6369f5}
+
+\item 
+\hypertarget{classdepth__clustering_1_1CloudProjection_ae61165968d75b56863d09bd8cd48e91e}{const Point\-Matrix \& {\bfseries matrix} () const }\label{classdepth__clustering_1_1CloudProjection_ae61165968d75b56863d09bd8cd48e91e}
+
+\item 
+void \hyperlink{classdepth__clustering_1_1CloudProjection_ad92d5819092ef3e4aabd4da3a5775f38}{Check\-Image\-And\-Storage} (const cv\-::\-Mat \&image)
+\begin{DoxyCompactList}\small\item\em Check if where we store data is valid. \end{DoxyCompactList}\item 
+void \hyperlink{classdepth__clustering_1_1CloudProjection_a595aa7f47ea9a934aaadff11f3709070}{Check\-Cloud\-And\-Storage} (const std\-::vector$<$ \hyperlink{classdepth__clustering_1_1RichPoint}{Rich\-Point} $>$ \&points)
+\begin{DoxyCompactList}\small\item\em Check if where we store data is valid. \end{DoxyCompactList}\item 
+virtual \hyperlink{classdepth__clustering_1_1RichPoint}{Rich\-Point} \hyperlink{classdepth__clustering_1_1CloudProjection_a684ca31033ee3b6b9d0ba2ea86d6e5b9}{Unproject\-Point} (const cv\-::\-Mat \&image, const int row, const int col) const 
+\begin{DoxyCompactList}\small\item\em Unproject a point from depth image coordinate. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classdepth__clustering_1_1CloudProjection_a3f70579b10bd93a7d5ac4b1f0d387701}{Point\-Matrix {\bfseries \-\_\-data}}\label{classdepth__clustering_1_1CloudProjection_a3f70579b10bd93a7d5ac4b1f0d387701}
+
+\item 
+\hypertarget{classdepth__clustering_1_1CloudProjection_a8978a85d52212a2a88cbb3c6791eddd6}{\hyperlink{classdepth__clustering_1_1ProjectionParams}{Projection\-Params} {\bfseries \-\_\-params}}\label{classdepth__clustering_1_1CloudProjection_a8978a85d52212a2a88cbb3c6791eddd6}
+
+\item 
+\hypertarget{classdepth__clustering_1_1CloudProjection_a2d239a9a0fcaada00de36aad436e2af2}{cv\-::\-Mat {\bfseries \-\_\-depth\-\_\-image}}\label{classdepth__clustering_1_1CloudProjection_a2d239a9a0fcaada00de36aad436e2af2}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Abstract class for cloud projection. 
+
+Inheritance diagram for depth\-\_\-clustering\-:\-:Cloud\-Projection\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classdepth__clustering_1_1CloudProjection__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for depth\-\_\-clustering\-:\-:Cloud\-Projection\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=550pt]{classdepth__clustering_1_1CloudProjection__coll__graph}
+\end{center}
+\end{figure}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classdepth__clustering_1_1CloudProjection_a595aa7f47ea9a934aaadff11f3709070}{\index{depth\-\_\-clustering\-::\-Cloud\-Projection@{depth\-\_\-clustering\-::\-Cloud\-Projection}!Check\-Cloud\-And\-Storage@{Check\-Cloud\-And\-Storage}}
+\index{Check\-Cloud\-And\-Storage@{Check\-Cloud\-And\-Storage}!depth_clustering::CloudProjection@{depth\-\_\-clustering\-::\-Cloud\-Projection}}
+\subsubsection[{Check\-Cloud\-And\-Storage}]{\setlength{\rightskip}{0pt plus 5cm}void depth\-\_\-clustering\-::\-Cloud\-Projection\-::\-Check\-Cloud\-And\-Storage (
+\begin{DoxyParamCaption}
+\item[{const std\-::vector$<$ {\bf Rich\-Point} $>$ \&}]{points}
+\end{DoxyParamCaption}
+)}}\label{classdepth__clustering_1_1CloudProjection_a595aa7f47ea9a934aaadff11f3709070}
+
+
+Check if where we store data is valid. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em points} & The points to check \\
+\hline
+\end{DoxyParams}
+
+
+Here is the caller graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classdepth__clustering_1_1CloudProjection_a595aa7f47ea9a934aaadff11f3709070_icgraph}
+\end{center}
+\end{figure}
+
+
+\hypertarget{classdepth__clustering_1_1CloudProjection_ad92d5819092ef3e4aabd4da3a5775f38}{\index{depth\-\_\-clustering\-::\-Cloud\-Projection@{depth\-\_\-clustering\-::\-Cloud\-Projection}!Check\-Image\-And\-Storage@{Check\-Image\-And\-Storage}}
+\index{Check\-Image\-And\-Storage@{Check\-Image\-And\-Storage}!depth_clustering::CloudProjection@{depth\-\_\-clustering\-::\-Cloud\-Projection}}
+\subsubsection[{Check\-Image\-And\-Storage}]{\setlength{\rightskip}{0pt plus 5cm}void depth\-\_\-clustering\-::\-Cloud\-Projection\-::\-Check\-Image\-And\-Storage (
+\begin{DoxyParamCaption}
+\item[{const cv\-::\-Mat \&}]{image}
+\end{DoxyParamCaption}
+)}}\label{classdepth__clustering_1_1CloudProjection_ad92d5819092ef3e4aabd4da3a5775f38}
+
+
+Check if where we store data is valid. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em image} & The image to check \\
+\hline
+\end{DoxyParams}
+\hypertarget{classdepth__clustering_1_1CloudProjection_ae06ff9699c1a37c535b39fa6f722fa2e}{\index{depth\-\_\-clustering\-::\-Cloud\-Projection@{depth\-\_\-clustering\-::\-Cloud\-Projection}!Clone@{Clone}}
+\index{Clone@{Clone}!depth_clustering::CloudProjection@{depth\-\_\-clustering\-::\-Cloud\-Projection}}
+\subsubsection[{Clone}]{\setlength{\rightskip}{0pt plus 5cm}virtual Cloud\-Projection\-::\-Ptr depth\-\_\-clustering\-::\-Cloud\-Projection\-::\-Clone (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classdepth__clustering_1_1CloudProjection_ae06ff9699c1a37c535b39fa6f722fa2e}
+
+
+Polymorphic clone of a projection. 
+
+\begin{DoxyReturn}{Returns}
+Shared pointer of a copy of this object. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classdepth__clustering_1_1RingProjection_a433c0ee114b89b6c78ad4c471d120153}{depth\-\_\-clustering\-::\-Ring\-Projection}, and \hyperlink{classdepth__clustering_1_1SphericalProjection_a1b7870502497310666b2909701906470}{depth\-\_\-clustering\-::\-Spherical\-Projection}.
+
+\hypertarget{classdepth__clustering_1_1CloudProjection_ad262ef9f4e0c9c7fab9cc37874ca72eb}{\index{depth\-\_\-clustering\-::\-Cloud\-Projection@{depth\-\_\-clustering\-::\-Cloud\-Projection}!Init\-From\-Points@{Init\-From\-Points}}
+\index{Init\-From\-Points@{Init\-From\-Points}!depth_clustering::CloudProjection@{depth\-\_\-clustering\-::\-Cloud\-Projection}}
+\subsubsection[{Init\-From\-Points}]{\setlength{\rightskip}{0pt plus 5cm}virtual void depth\-\_\-clustering\-::\-Cloud\-Projection\-::\-Init\-From\-Points (
+\begin{DoxyParamCaption}
+\item[{const std\-::vector$<$ {\bf Rich\-Point} $>$ \&}]{points}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classdepth__clustering_1_1CloudProjection_ad262ef9f4e0c9c7fab9cc37874ca72eb}
+
+
+Initialize from 3d points. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em points} & The points \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{classdepth__clustering_1_1RingProjection_af2984815f24bc0a8c131c233d319268c}{depth\-\_\-clustering\-::\-Ring\-Projection}, and \hyperlink{classdepth__clustering_1_1SphericalProjection_a36daf4acaed7ded443dd1928f27e7bb8}{depth\-\_\-clustering\-::\-Spherical\-Projection}.
+
+\hypertarget{classdepth__clustering_1_1CloudProjection_a684ca31033ee3b6b9d0ba2ea86d6e5b9}{\index{depth\-\_\-clustering\-::\-Cloud\-Projection@{depth\-\_\-clustering\-::\-Cloud\-Projection}!Unproject\-Point@{Unproject\-Point}}
+\index{Unproject\-Point@{Unproject\-Point}!depth_clustering::CloudProjection@{depth\-\_\-clustering\-::\-Cloud\-Projection}}
+\subsubsection[{Unproject\-Point}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Rich\-Point} depth\-\_\-clustering\-::\-Cloud\-Projection\-::\-Unproject\-Point (
+\begin{DoxyParamCaption}
+\item[{const cv\-::\-Mat \&}]{image, }
+\item[{const int}]{row, }
+\item[{const int}]{col}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [virtual]}}}\label{classdepth__clustering_1_1CloudProjection_a684ca31033ee3b6b9d0ba2ea86d6e5b9}
+
+
+Unproject a point from depth image coordinate. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em image} & A depth image \\
+\hline
+\mbox{\tt in}  & {\em row} & A row in the image \\
+\hline
+\mbox{\tt in}  & {\em col} & A col in the image\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\{ description\-\_\-of\-\_\-the\-\_\-return\-\_\-value \} 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{classdepth__clustering_1_1RingProjection_a16cbf43e541e65560cb282c560b4efa7}{depth\-\_\-clustering\-::\-Ring\-Projection}.
+
+
+
+Here is the call graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classdepth__clustering_1_1CloudProjection_a684ca31033ee3b6b9d0ba2ea86d6e5b9_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classdepth__clustering_1_1CloudProjection_a684ca31033ee3b6b9d0ba2ea86d6e5b9_icgraph}
+\end{center}
+\end{figure}
+
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+/home/hadoop/chy/depth\-\_\-clustering-\/master234/src/projections/cloud\-\_\-projection.\-h\item 
+/home/hadoop/chy/depth\-\_\-clustering-\/master234/src/projections/cloud\-\_\-projection.\-cpp\end{DoxyCompactItemize}

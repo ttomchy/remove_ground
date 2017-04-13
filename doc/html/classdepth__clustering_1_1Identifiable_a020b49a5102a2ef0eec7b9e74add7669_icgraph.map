@@ -1,0 +1,8 @@
+<map id="depth_clustering::Identifiable::id" name="depth_clustering::Identifiable::id">
+<area shape="rect" id="node2" href="$classdepth__clustering_1_1AbstractSender.html#aca33c29cca1916fb0a3edd9024a49b51" title="Adds a client. " alt="" coords="277,5,464,46"/>
+<area shape="rect" id="node3" href="$classdepth__clustering_1_1AbstractSender.html#a0c33c98abe8fa71a86f02af95b1c71c1" title="Removes a client. " alt="" coords="265,70,477,111"/>
+<area shape="rect" id="node4" href="$classdepth__clustering_1_1AbstractSender.html#a147752e5ab7ca15da9c8d8e60575390b" title="Shares data with everyone who listens to it. " alt="" coords="261,135,480,191"/>
+<area shape="rect" id="node5" href="$classdepth__clustering_1_1CloudOdomRosSubscriber.html#a76a7474f1deed190ac2fb57084c4cdb9" title="Get synchronized odometry and cloud. " alt="" coords="541,109,736,150"/>
+<area shape="rect" id="node7" href="$classdepth__clustering_1_1CloudOdomRosSubscriber.html#a8de806bc0b847229dcc92c504908f019" title="Get point cloud from ROS. " alt="" coords="528,174,749,215"/>
+<area shape="rect" id="node6" href="$classdepth__clustering_1_1CloudOdomRosSubscriber.html#a16020c63b14308591cae6f4a9ba9b29a" title="Starts listening to ros. " alt="" coords="797,142,1032,183"/>
+</map>

@@ -1,0 +1,8 @@
+<map id="depth_clustering::ImageBasedClusterer&lt; LabelerT &gt;" name="depth_clustering::ImageBasedClusterer&lt; LabelerT &gt;">
+<area shape="rect" id="node2" href="$classdepth__clustering_1_1AbstractClusterer.html" title="Class for abstract clusterer. " alt="" coords="138,757,312,923"/>
+<area shape="rect" id="node3" href="$classdepth__clustering_1_1AbstractClient.html" title="{depth_clustering::Abstract\lClient\&lt; Cloud \&gt;\n||+ AbstractClient()\l+ ~AbstractClient()\l+ OnNewObjectReceived()\l}" alt="" coords="5,541,184,662"/>
+<area shape="rect" id="node4" href="$classdepth__clustering_1_1Identifiable.html" title="Class for identifiable. " alt="" coords="165,5,352,171"/>
+<area shape="rect" id="node5" href="$classdepth__clustering_1_1AbstractClient.html" title="Class for abstract client. " alt="" coords="75,266,253,387"/>
+<area shape="rect" id="node6" href="$classdepth__clustering_1_1AbstractSender.html" title="{depth_clustering::Abstract\lSender\&lt; std::vector\&lt; Cloud \&gt; \&gt;\n|# _clients\l# _type\l|+ AbstractSender()\l+ ~AbstractSender()\l+ type()\l+ AddClient()\l+ RemoveClient()\l+ RemoveClient()\l+ client_count()\l+ ShareDataWithAllClients()\l}" alt="" coords="209,497,415,706"/>
+<area shape="rect" id="node7" href="$classdepth__clustering_1_1AbstractSender.html" title="Class for abstract sender. " alt="" coords="328,222,515,431"/>
+</map>
