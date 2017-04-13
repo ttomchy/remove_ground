@@ -1,4 +1,0 @@
-<map id="depth_clustering::ImageBasedClusterer::OnNewObjectReceived" name="depth_clustering::ImageBasedClusterer::OnNewObjectReceived">
-<area shape="rect" id="node2" href="$classdepth__clustering_1_1AbstractImageLabeler.html#abab18e0c1ca40b54922a2f21948b996b" title="Generates random&#45;colored image from image of labels. " alt="" coords="279,5,471,46"/>
-<area shape="rect" id="node3" href="$classdepth__clustering_1_1AbstractSender.html#a147752e5ab7ca15da9c8d8e60575390b" title="Shares data with everyone who listens to it. " alt="" coords="275,69,474,125"/>
-</map>
