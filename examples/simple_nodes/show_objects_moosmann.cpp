@@ -55,7 +55,7 @@ using namespace depth_clustering;
 
 int min_cluster_size = 20;
 int max_cluster_size = 100000;
-
+fgjhfj
 int smooth_window_size = 5;
 Radians ground_remove_angle = 9_deg;
 //static std::unique_lock <std::mutex> lck(m_mux);
