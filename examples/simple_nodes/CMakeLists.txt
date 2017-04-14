@@ -21,10 +21,9 @@ target_link_libraries(show_objects_moosmann
                       ground_remove
                       folder_reader
                       visualization
+                      ${catkin_LIBRARIES}
                       ${MY_QT_LIBRARIES}
                       ${Boost_LIBRARIES}
                       ${PCL_LIBRARIES}
                       ${OpenCV_LIBS}
                       ${CMAKE_THREAD_LIBS_INIT})
-
-

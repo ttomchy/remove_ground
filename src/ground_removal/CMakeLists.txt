@@ -8,8 +8,8 @@ target_link_libraries(ground_remove
 
 #add_executable(learn_thread thread.cpp)
 #target_link_libraries(ground_remove
-  #      identifiable
-   #     velodyne_utils
-  #      difference
-  #      ${PCL_LIBRARIES}
-   #     ${OpenCV_LIBS})
+#      identifiable
+#     velodyne_utils
+#      difference
+#      ${PCL_LIBRARIES}
+#     ${OpenCV_LIBS})

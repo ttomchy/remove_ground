@@ -9,11 +9,11 @@ struct test_define{
     cv::Mat key;
 };
 
+
 static std::mutex m_mux;//全局互斥所
- std::deque<test_define> image_buff;
+std::deque<test_define> image_buff;
 
 const int size=100000;
 
-gfjjfhj
 //typedef
 #endif //DEPTH_CLUSTERING_SHOW_OBJECTS_MOOSMANN_H

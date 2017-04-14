@@ -34,19 +34,19 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 
 include(CTest)
-IF(IS_DIRECTORY "/usr/src/gtest/")
-  MESSAGE(STATUS "Found google test sources in /usr/src/gtest/")
-
-  ADD_SUBDIRECTORY(/usr/src/gtest/ gtest)
-
-  # mimick the behaviour of find_package(GTest)
-  SET(GTEST_FOUND TRUE)
-  SET(GTEST_BOTH_LIBRARIES gtest gtest_main)
-  SET(GTEST_LIBRARIES gtest)
-  SET(GTEST_MAIN_LIBRARIES gtest_main)
-ELSE()
-  find_package(GTest)
-ENDIF()
+#IF(IS_DIRECTORY "/usr/src/gtest/")
+#  MESSAGE(STATUS "Found google test sources in /usr/src/gtest/")
+#
+#  ADD_SUBDIRECTORY(/usr/src/gtest/ gtest)
+#
+#  # mimick the behaviour of find_package(GTest)
+#  SET(GTEST_FOUND TRUE)
+#  SET(GTEST_BOTH_LIBRARIES gtest gtest_main)
+#  SET(GTEST_LIBRARIES gtest)
+#  SET(GTEST_MAIN_LIBRARIES gtest_main)
+#ELSE()
+#  find_package(GTest)
+#ENDIF()
 
 set(Boost_USE_STATIC_LIBS OFF)
 
@@ -95,7 +95,8 @@ message(STATUS "Linking against QGlViewer lib: ${QGLVIEWER_LIBRARY}")
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin QUIET COMPONENTS
+#find_package(catkin QUIET COMPONENTS
+find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
   std_msgs
@@ -163,7 +164,7 @@ include_directories(
 add_subdirectory(src)
 add_subdirectory(examples)
 
-message(STATUS "BUILD_TESTING: ${BUILD_TESTING}")
-if (${BUILD_TESTING})
-  add_subdirectory(test)
-endif()
+#message(STATUS "BUILD_TESTING: ${BUILD_TESTING}")
+#if (${BUILD_TESTING})
+#  add_subdirectory(test)
+#endif()

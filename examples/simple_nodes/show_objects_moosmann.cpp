@@ -32,18 +32,21 @@
 #include "utils/timer.h"
 #include "utils/velodyne_utils.h"
 #include "visualization/visualizer.h"
-#include<mutex>
+#include <mutex>
 #include "tclap/CmdLine.h"
 #include <deque>
 #include <unistd.h>
 #include "show_objects_moosmann.h"
 #include <cstdlib>
-test_define no_gnd_img,read_depth_img;
+#include <sstream>
+#include <ros/ros.h>
+#include <std_msgs/String.h>
+
+test_define no_gnd_img,read_depth_img ;
 
 using std::string;
 using std::to_string;
 int i_depth_image=0;
-
 
 int i_no_ground_before=0;
 int i_no_ground_produced=0;
@@ -55,12 +58,12 @@ using namespace depth_clustering;
 
 int min_cluster_size = 20;
 int max_cluster_size = 100000;
-fgjhfj
+
 int smooth_window_size = 5;
 Radians ground_remove_angle = 9_deg;
-//static std::unique_lock <std::mutex> lck(m_mux);
-void ReadData(const Radians& angle_tollerance, const string& in_path /*,
-              Visualizer* visualizer*/) {
+
+void ReadData(const Radians& angle_tollerance, const string& in_path
+             ) {
     // delay reading for one second to allow GUI to load
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -77,25 +80,29 @@ void ReadData(const Radians& angle_tollerance, const string& in_path /*,
             ProjectionParams::FromConfigFile(config_reader.GetNextFilePath());
 
     for (const auto& path : image_reader.GetAllFilePaths()) {
-       // std::unique_lock <std::mutex> lck(m_mux);
-      //  lck.lock();
+
         m_mux.lock();
         auto depth_image = MatFromDepthPng(path);
 
         no_gnd_img.key=depth_image;
         image_buff.push_front(no_gnd_img);
 
+        int image_num=image_buff.size();
 
-        printf("product one image \n");
-        printf("the size of queue %d\n",image_buff.size());
+        ROS_WARN("product one image ");
+        ROS_WARN("the size of queue %d ",image_num);
+
+
       //  sprintf(image_name, "%s%d%s", "depth_image_buff_produced", ++i_no_ground_produced, ".png");//保存的图片名
       //  cv::imwrite(image_name,no_gnd_img.key);
         m_mux.unlock();
+     /*
         srand(time(0));
         sleep(rand()%3+1);
         printf("the value of the product_srand(time(0)) %d \n",rand()%10+1);
 
-
+     */
+        //sleep(2);
     }
 
 }
@@ -128,17 +135,26 @@ void consume_thread(const Radians& angle_tollerance,const string& in_path ,Visua
             continue;
         }
         read_depth_img = image_buff.back();
-        printf("consume one image \n");
+        int image_num=image_buff.size();
+        ROS_ERROR("consume one image ");
+        ROS_ERROR("the size of queue %d ",image_num);
 
-        sprintf(image_name_consumer, "%s%d%s", "depth_image_buff_consumer", ++i_no_ground_consumer, ".png");//保存的图片名
+
+
+        sprintf(image_name_consumer, "%s%d%s", ".//result//depth_image_buff_consumer", ++i_no_ground_consumer, ".png");//保存的图片名
+      //  sprintf(image_name_consumer, "%s%d%s", "depth_image_buff_consumer", ++i_no_ground_consumer, ".png");
         cv::imwrite(image_name_consumer,read_depth_img.key);
+
         image_buff.pop_back();
-        printf("the size of queue %d\n",image_buff.size());
+        image_num=image_buff.size();
+        ROS_ERROR("the size of queue %d ",image_num);
+
+ /*
         m_mux.unlock();
         srand(time(0));
         sleep(rand()%5+1);
         printf("the value of the consumer_srand(time(0)) %d \n",rand()%10+1);
-/*
+*/
         auto cloud_ptr = Cloud::FromImage(read_depth_img.key, *proj_params_ptr);
 
         time_utils::Timer timer;
@@ -146,8 +162,8 @@ void consume_thread(const Radians& angle_tollerance,const string& in_path ,Visua
         visualizer->OnNewObjectReceived(*cloud_ptr, 0);
         depth_ground_remover.OnNewObjectReceived(*cloud_ptr, 0);
 
-
-
+        m_mux.unlock();
+      /*
         auto current_millis = timer.measure(time_utils::Timer::Units::Milli);
         fprintf(stderr, "INFO: It took %lu ms to process and show everything.\n",
                 current_millis);
@@ -157,19 +173,16 @@ void consume_thread(const Radians& angle_tollerance,const string& in_path ,Visua
         }
         auto time_to_wait = max_wait_time - current_millis;
         fprintf(stderr, "INFO: Waiting another %lu ms.\n", time_to_wait);
-
-*/
+      */
+        //sleep(2);
     }
     i_no_ground_consumer=0;
 
 }
 
-double random(double start, double end)
-{
-    return start+(end-start)*rand()/(RAND_MAX + 1.0);
-}
 
 int main(int argc, char* argv[]) {
+
     TCLAP::CmdLine cmd(
             "Loads clouds from Frank Moosmann's data and clusters each of them.", ' ',
             "1.0");
@@ -186,11 +199,21 @@ int main(int argc, char* argv[]) {
 
     Radians angle_tollerance = Radians::FromDegrees(angle_arg.getValue());
     string in_path = path_to_data_arg.getValue();
-    fprintf(stderr, "INFO: Reading from: %s \n", in_path.c_str());
+
+    fprintf(stderr, "INFO: The data is Reading from: %s \n", in_path.c_str());
 
 
+    std_msgs::String msg;
+    std::stringstream ss;
 
-
+    ss << "hello world " ;
+    msg.data = ss.str();
+//    ROS_INFO("%s", msg.data.c_str());
+    ROS_INFO("test");
+    ROS_WARN("TEST");
+    std::string topicNameTrajInput ="TopicRos";
+    ROS_WARN( "%s", topicNameTrajInput.c_str() );
+    ROS_ERROR("Failed to call service add_two_ints");
 
     QApplication application(argc, argv);
     // visualizer should be created from a gui thread
@@ -199,7 +222,7 @@ int main(int argc, char* argv[]) {
 
     // create and run loader thread
     std::cout<<" Now it runs before the load_thread ！"<<std::endl;
-    std::thread loader_thread(ReadData , angle_tollerance, in_path /*, &visualizer*/);
+    std::thread loader_thread(ReadData , angle_tollerance, in_path );
     std::cout<<" Now it runs after the load_thread ！"<<std::endl;
     std::thread process_img(consume_thread, angle_tollerance,in_path,&visualizer);
 
@@ -210,4 +233,5 @@ int main(int argc, char* argv[]) {
     loader_thread.join();
     process_img.join();
     return exit_code;
+
 }
