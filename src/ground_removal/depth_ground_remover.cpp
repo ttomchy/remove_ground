@@ -33,6 +33,8 @@
 #include"show_objects_moosmann.h"
 
 using namespace std;
+//extern std::deque<test_define> image_buff;
+
 namespace depth_clustering {
 
 using cv::Mat; 
@@ -40,14 +42,16 @@ using cv::DataType;
 using std::to_string;
 using time_utils::Timer;
 
+
+
 const cv::Point ANCHOR_CENTER = cv::Point(-1, -1);// opencv parameter 
 const int SAME_OUTPUT_TYPE = -1;
-int i = 0;char image_name[6000];
+int i = 0;
 int i_txt=0;
 int num_curlable=0;
-char filename[6000];
+
 int i_smooth=0;
-int i_no_ground=0;
+
 
 void DepthGroundRemover::OnNewObjectReceived(const Cloud& cloud,
                                              const int sender_id) {
@@ -59,8 +63,6 @@ void DepthGroundRemover::OnNewObjectReceived(const Cloud& cloud,
     return; //
   }
   Cloud cloud_copy(cloud);
-
-
  // const auto sines_vec = _params.RowAngleSines();//sin and cos functions
 
   //std::vector<float>  sines_vec = _params.RowAngleSines();//sin and cos functions
@@ -74,14 +76,25 @@ void DepthGroundRemover::OnNewObjectReceived(const Cloud& cloud,
   auto smoothed_image = ApplySavitskyGolaySmoothing(angle_image, _window_size);
   auto no_ground_image = ZeroOutGroundBFS(depth_image, smoothed_image,
                                          _ground_remove_angle, _window_size);
+ /*
+    printf("consume one image \n");
+    consume_image.key=image_buff.back();
 
-  sprintf(image_name, "%s%d%s", "smoothed_image", ++i_no_ground, ".png");//保存的图片名
-  cv::imwrite(image_name,depth_image);
+  */
+    //image_buff.pop_back();
+   // m_mux.unlock();
+
+    // sleep(2);
+/*
+  sprintf(image_name, "%s%d%s", "no_ground_image_before", ++i_no_ground_before, ".png");//保存的图片名
+  cv::imwrite(image_name,no_ground_image);
   no_gnd_img.key=no_ground_image;
   image_buff.push_front(no_gnd_img);
   printf("the size of queue %d\n",image_buff.size());
   printf("product one image \n");
-
+  sprintf(image_name, "%s%d%s", "no_ground_image_produced", ++i_no_ground_produced, ".png");//保存的图片名
+  cv::imwrite(image_name,no_gnd_img.key);
+*/
   cloud_copy.projection_ptr()->depth_image() = no_ground_image;
   this->ShareDataWithAllClients(cloud_copy);
   _counter++;
@@ -241,9 +254,9 @@ Mat DepthGroundRemover::ZeroOutGround(const cv::Mat& image,
         //cv::namedWindow( "out demo", CV_WINDOW_AUTOSIZE );
         //cv::imshow("out",out);        // std::cout<<"the value of  count_num is :"<<count_num<<std::endl;
 
-        sprintf(image_name, "%s%d%s", "ZeroOutGround_origin", ++i, ".png");//保存的图片名
+       // sprintf(image_name, "%s%d%s", "ZeroOutGround_origin", ++i, ".png");//保存的图片名
         //  cv::medianBlur(binary_self,out,7);
-        cv::imwrite(image_name,binary_self);
+       // cv::imwrite(image_name,binary_self);
 
         return res;
     }
@@ -271,9 +284,9 @@ Mat DepthGroundRemover::ZeroOutGround(const cv::Mat& image,
         //cv::namedWindow( "out demo", CV_WINDOW_AUTOSIZE );
         //cv::imshow("out",out);        // std::cout<<"the value of  count_num is :"<<count_num<<std::endl;
 
-        sprintf(image_name, "%s%d%s", "ZeroOutGround_me", ++i, ".png");//保存的图片名
-        cv::medianBlur(binary_self,out,7);
-        cv::imwrite(image_name,binary_self);
+       // sprintf(image_name, "%s%d%s", "ZeroOutGround_me", ++i, ".png");//保存的图片名
+       // cv::medianBlur(binary_self,out,7);
+       // cv::imwrite(image_name,binary_self);
 
         return res;
     }
@@ -383,9 +396,9 @@ Mat DepthGroundRemover::ZeroOutGroundBFS(const cv::Mat& image,
   //cv::namedWindow( "out demo", CV_WINDOW_AUTOSIZE );
   //cv::imshow("out",out);        // std::cout<<"the value of  count_num is :"<<count_num<<std::endl;
 
-    sprintf(image_name, "%s%d%s", "binary_self", ++i, ".png");//保存的图片名
-    cv::medianBlur(binary_self,out,3);
-    cv::imwrite(image_name,out);
+   // sprintf(image_name, "%s%d%s", "binary_self", ++i, ".png");//保存的图片名
+   // cv::medianBlur(binary_self,out,3);
+    //cv::imwrite(image_name,out);
 
   return res;
 
