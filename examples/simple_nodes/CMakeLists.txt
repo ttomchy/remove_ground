@@ -27,3 +27,7 @@ target_link_libraries(show_objects_moosmann
                       ${PCL_LIBRARIES}
                       ${OpenCV_LIBS}
                       ${CMAKE_THREAD_LIBS_INIT})
+
+
+set(SOURCE_FILES delete.cpp)
+add_executable(learn_thread ${SOURCE_FILES})
