@@ -33,15 +33,19 @@
 #include"show_objects_moosmann.h"
 
 using namespace std;
-//extern std::deque<test_define> image_buff;
-test_define image_implent,image_origin;
+
+test_define image_me,image_origin;
+
+static std::deque<test_define> image_buff_before;
+static std::deque<test_define> image_buff_after;
+
 namespace depth_clustering {
 
 using cv::Mat; 
 using cv::DataType;
 using std::to_string;
 using time_utils::Timer;
-
+//std::deque<test_my> image_buff_before;
 const cv::Point ANCHOR_CENTER = cv::Point(-1, -1);// opencv parameter 
 const int SAME_OUTPUT_TYPE = -1;
 int i = 0;
@@ -74,16 +78,27 @@ void DepthGroundRemover::OnNewObjectReceived(const Cloud& cloud,
   // _ground_remove_angle=0.15078_deg;
   auto angle_image = CreateAngleImage(depth_image);//刚开始会在这里进行执行程
   auto smoothed_image = ApplySavitskyGolaySmoothing(angle_image, _window_size);
-  //auto no_ground_image = ZeroOutGroundBFS(depth_image, smoothed_image,
-                                        // _ground_remove_angle, _window_size);
-   auto no_ground_image =ZeroOutGround(depth_image, smoothed_image,
+
+  auto no_ground_image =ZeroOutGround(depth_image, smoothed_image,
                                          _ground_remove_angle);
+
+  image_origin.key=no_ground_image;
+  image_buff_before.push_front(image_origin);
+/*  sprintf(image_name_before, "%s%d%s", ".//result//binary_self_before", ++i_binary_self_before, ".png");
+  cv::imwrite(image_name_before,image_origin.key);
+*/
+
+
+  auto no_ground_image_me=ZeroOutGround_me(depth_image, smoothed_image, _ground_remove_angle);
+  image_me.key=no_ground_image_me;
+  image_buff_after.push_front(image_me);
+ // sprintf(image_name_after, "%s%d%s", ".//result//binary_self_after", ++i_binary_self_after, ".png");
+//  cv::imwrite(image_name_after,image_me.key);
+
  /*
     printf("consume one image \n");
     consume_image.key=image_buff.back();
 
-  */
-    //image_buff.pop_back();
 
 
     // sleep(2);
@@ -138,55 +153,7 @@ void DepthGroundRemover::OnNewObjectReceived(const Cloud& cloud,
 */
 
 }
-/*
-void product_thread ( const cv::Mat& depth_image , const Radians& threshold){
-  while(true){
-    std::unique_lock <std::mutex> lck(m_mux);
-    std::cout<<" Now it runs in the product_thread OnNewObjectReceived function  in the ground_remove.cpp!"<<std::endl;
 
-    const cv::Mat& depth_image2 =RepairDepth(depth_image);
-    //std::cout<<"depth_image:"<<depth_image2<<std::endl;
-    //RepairDepth(cloud.projection_ptr()->depth_image(), 5, 1.0f);//now it turn to the RepairDepth function .
-    Timer total_timer;
-    // _ground_remove_angle=0.15078_deg;
-    auto angle_image = CreateAngleImage(depth_image2);//刚开始会在这里进行执行程
-    auto smoothed_image = ApplySavitskyGolaySmoothing(angle_image, 5);
-    auto no_ground_image_me = ZeroOutGround(depth_image2, smoothed_image,
-                                               threshold);
-    sprintf(image_name, "%s%d%s", "product_thread", ++i_no_ground, ".png");//保存的图片名
-    cv::imwrite(image_name,no_ground_image_me);
-
-    nogroud_num.key=smoothed_image;
-    nogroud_num1.push_front(nogroud_num);
-    printf("the size of queue %d\n",nogroud_num1.size());
-    printf("product one image \n");
-    lck.unlock();
-    sleep(2);
-  }
-}
-*/
-    /*
-void consume_thread_one(const cv::Mat& depth_image,
-                        const Radians& threshold){
-
-    while (true){
-        std::unique_lock<std::mutex> lck(m_mux);
-        if(nogroud_num1.empty()) {
-            lck.unlock();continue;
-        }
-        ground= nogroud_num1.back();
-        auto no_ground_image = ZeroOutGround_origin(depth_image, ground.key,
-                                                threshold);
-
-       // auto no_ground_image_me = ZeroOutGround_me(depth_image, ground.key,
-                                                      //        threshold);
-
-        printf("consume one image \n");
-        nogroud_num1.pop_back();
-        lck.unlock();
-        sleep(0);
-    }
-}*/
 
 Mat DepthGroundRemover::ZeroOutGround(const cv::Mat& image,
                                       const cv::Mat& angle_image,
@@ -207,7 +174,7 @@ Mat DepthGroundRemover::ZeroOutGround(const cv::Mat& image,
       }
     }
   }
-   Mat out;
+  // Mat out;
   //Mat element = getStructuringElement( 0,cv::Size(15,15));
   // cv::erode(binary_self,out,element);
   //cv::namedWindow( "out demo", CV_WINDOW_AUTOSIZE );
@@ -216,19 +183,59 @@ Mat DepthGroundRemover::ZeroOutGround(const cv::Mat& image,
   // image_implent.key=binary_self;
   //image_buff.push_front(image_implent);
 
-    sprintf(image_name_before, "%s%d%s", ".//result//binary_self_before", ++i_binary_self_before, ".png");
-   // sprintf(image_name_before, "%s%d%s", "binary_self_before", ++i_binary_self_before, ".png");
-    cv::imwrite(image_name_before,binary_self);
 
-    cv::medianBlur(binary_self,out,7);
-    sprintf(image_name_after, "%s%d%s", ".//result//binary_self_after", ++i_binary_self_after, ".png");
-   // sprintf(image_name_after, "%s%d%s", "binary_self_after", ++i_binary_self_after, ".png");
-    cv::imwrite(image_name_after,out);
+
+
 
     return res;
 }
 
+Mat DepthGroundRemover::ZeroOutGround_me(const cv::Mat& image,
+                                      const cv::Mat& angle_image,
+                                      const Radians& threshold) const {
+    // TODO(igor): test if its enough to remove only values starting from the
+    // botom pixel. I don't like removing all values based on a threshold.
+    // But that's a start, so let's stick with it for now.
+    std::cout<<" Now it runs in the ZeroOutGround function !"<<std::endl;
 
+    Mat binary_self = Mat::zeros(image.rows,image.cols, CV_8UC1);
+    Mat res = cv::Mat::zeros(image.size(), CV_32F);
+    for (int r = 0; r < image.rows; ++r) {
+        for (int c = 0; c < image.cols; ++c) {
+            if (angle_image.at<float>(r, c) > threshold.val()) {
+                // The value of the threshold.val() is 0.15708
+                res.at<float>(r, c) = image.at<float>(r, c);
+                binary_self.at<uchar>(r,c)=255;
+            }
+        }
+    }
+    Mat out;
+    //Mat element = getStructuringElement( 0,cv::Size(15,15));
+    // cv::erode(binary_self,out,element);
+    //cv::namedWindow( "out demo", CV_WINDOW_AUTOSIZE );
+    //cv::imshow("out",out);
+
+    // image_implent.key=binary_self;
+    //image_buff.push_front(image_implent);
+    /*
+       sprintf(image_name_before, "%s%d%s", ".//result//binary_self_before", ++i_binary_self_before, ".png");
+       cv::imwrite(image_name_before,binary_self);
+    */
+
+    /*
+       sprintf(image_name_after, "%s%d%s", ".//result//binary_self_after", ++i_binary_self_after, ".png");
+       cv::imwrite(image_name_after,out);
+    */
+    Mat out_origin = cv::Mat::zeros(image.size(), CV_32F);
+
+    cv::blur(res,out_origin,cv::Size(3,3),cv::Point(-1,-1));
+
+
+
+
+
+    return out_origin;
+}
 Mat DepthGroundRemover::ZeroOutGroundBFS(const cv::Mat& image,
                                          const cv::Mat& angle_image,
                                          const Radians& threshold,
@@ -408,21 +415,6 @@ Mat DepthGroundRemover::RepairDepth(const Mat& depth_image) {
   depth_image.copyTo(inpainted_depth, mask);
   return inpainted_depth;
 }
-cv::Mat RepairDepth_me(const cv::Mat& depth_image) {
-    std::cout<<" Now it runs in the RepairDepth function parameter is Mat& depth_image  !"<<std::endl;
-    Mat kernel = GetUniformKernel_me(5);
-    Mat inpainted_depth;  // init an empty smoothed image
-
-    cv::filter2D(depth_image, inpainted_depth, SAME_OUTPUT_TYPE, kernel,
-                 ANCHOR_CENTER, 0, cv::BORDER_REFLECT101);
-    Mat mask = depth_image > 0;
-    depth_image.copyTo(inpainted_depth, mask);
-    return inpainted_depth;
-}
-    ProjectionParams DepthGroundRemover::get_params()
-    {
-        return _params;
-    }
 
 
 Mat DepthGroundRemover::CreateAngleImage(const Mat& depth_image) {
@@ -593,7 +585,7 @@ Mat DepthGroundRemover::GetUniformKernel(int window_size, int type) const {
   return kernel; //在这里是自己构造的一个滤波器的kernel
 
 }
-
+/*
 cv::Mat GetUniformKernel_me(int window_size, int type)  {
     std::cout<<" Now it runs in the GetUniformKernel function !"<<std::endl;
     if (window_size % 2 == 0) {
@@ -606,6 +598,7 @@ cv::Mat GetUniformKernel_me(int window_size, int type)  {
     return kernel; //在这里是自己构造的一个滤波器的kernel
 
 }
+ */
 Mat DepthGroundRemover::ApplySavitskyGolaySmoothing(const Mat& image,
                                                     int window_size) {
   std::cout<<" Now it runs in the ApplySavitskyGolaySmoothing function !"<<std::endl;

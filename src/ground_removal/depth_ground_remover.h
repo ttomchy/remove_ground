@@ -64,7 +64,7 @@ class DepthGroundRemover : public AbstractClient<Cloud>,
    * @param      sender_id    id of the sender 传感器的ID 号
    */
   void OnNewObjectReceived(const Cloud& cloud, const int sender_id) override;
-  ProjectionParams get_params();
+  //ProjectionParams get_params();
   void product_thread ( const cv::Mat& depth_image ,  const Radians& threshold);
  protected:
   /**
@@ -78,6 +78,9 @@ class DepthGroundRemover : public AbstractClient<Cloud>,
    */
   cv::Mat ZeroOutGround(const cv::Mat& image, const cv::Mat& angle_image,
                         const Radians& threshold) const;
+
+  cv::Mat ZeroOutGround_me(const cv::Mat& image, const cv::Mat& angle_image,
+                          const Radians& threshold) const;
 
   cv::Mat ZeroOutGroundBFS(const cv::Mat& image, const cv::Mat& angle_image,
                            const Radians& threshold, int kernel_size) const;
@@ -150,9 +153,7 @@ void consume_thread_one(const cv::Mat& depth_image,
                     const Radians& threshold);
 void consume_thread_two(const cv::Mat& depth_image,
                         const Radians& threshold);
-cv::Mat ZeroOutGround_me(const cv::Mat& image,
-                     const cv::Mat& angle_image,
-                     const Radians& threshold);
+
 cv::Mat ZeroOutGround_origin(const cv::Mat& image,
                          const cv::Mat& angle_image,
                          const Radians& threshold);
