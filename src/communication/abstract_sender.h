@@ -37,6 +37,8 @@ enum class SenderType {
  *
  * @tparam     ObjSendType  Type of the object to be sent.
  */
+
+
 template <class ObjSendType>
 class AbstractSender : public virtual Identifiable {
  public:
@@ -67,6 +69,7 @@ class AbstractSender : public virtual Identifiable {
    *
    * @param      client  The client to receive the processed data
    */
+
   void AddClient(AbstractClient<ObjSendType>* client) { 
     std::cout<<" now it runs in the abstract_sender.h  !!!"<<std::endl;
     std::cout<<" now it runs in the AddClient function !!!"<<std::endl;
@@ -98,6 +101,7 @@ class AbstractSender : public virtual Identifiable {
    *
    * @param[in]  id    The identifier of the client to remove
    */
+
   void RemoveClient(int id) {
     if (_clients.find(id) == _clients.end()) {
       fprintf(stderr, "Error: no such client to delete: %d\n", id);
@@ -135,7 +139,7 @@ class AbstractSender : public virtual Identifiable {
    * @param[in]  obj   Object to share
    * @param[in]  id    Id, by default this->id()
    */
-  void ShareDataWithAllClients(const ObjSendType& obj, int id = -1) {
+  void ShareDataWithAllClients(const ObjSendType& obj, int id = -1) { //more买的ID为-1
     int id_to_use = id >= 0 ? id : this->id();
     for (auto& kv : _clients) {
       kv.second->OnNewObjectReceived(obj, id_to_use);

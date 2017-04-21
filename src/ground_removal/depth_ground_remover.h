@@ -17,7 +17,6 @@
 #define SRC_GROUND_REMOVAL_DEPTH_GROUND_REMOVER_H_
 
 #include <opencv2/opencv.hpp>
-
 #include <algorithm>
 
 #include "communication/abstract_client.h"
@@ -26,6 +25,7 @@
 #include "utils/radians.h"
 #include "utils/cloud.h"
 #include "show_objects_moosmann.h"
+
 
 namespace depth_clustering {
 
@@ -66,6 +66,17 @@ class DepthGroundRemover : public AbstractClient<Cloud>,
   void OnNewObjectReceived(const Cloud& cloud, const int sender_id) override;
   //ProjectionParams get_params();
   void product_thread ( const cv::Mat& depth_image ,  const Radians& threshold);
+  cv::Mat ZeroOutGround(const cv::Mat& image, const cv::Mat& angle_image,
+                          const Radians& threshold) const;
+
+
+  cv::Mat Ground_image(const cv::Mat& image, const cv::Mat& angle_image,
+                       const Radians& threshold) const;
+
+
+
+
+
  protected:
   /**
    * @brief      Zero out all pixels that belong to ground
@@ -76,8 +87,8 @@ class DepthGroundRemover : public AbstractClient<Cloud>,
    *
    * @return     depth image with 0 instead of ground pixels 返回的图像中已经完全不含有地面上面的像素点了。
    */
-  cv::Mat ZeroOutGround(const cv::Mat& image, const cv::Mat& angle_image,
-                        const Radians& threshold) const;
+ // cv::Mat ZeroOutGround(const cv::Mat& image, const cv::Mat& angle_image,
+                    //    const Radians& threshold) const;
 
   cv::Mat ZeroOutGround_me(const cv::Mat& image, const cv::Mat& angle_image,
                           const Radians& threshold) const;
@@ -140,6 +151,7 @@ class DepthGroundRemover : public AbstractClient<Cloud>,
 
   cv::Mat RepairDepth(const cv::Mat& depth_image);
   void WriteData(cv::Mat& m, const char* filename);
+
   ProjectionParams _params;
   int _window_size = 5;
   Radians _ground_remove_angle = 5_deg;
@@ -148,6 +160,20 @@ class DepthGroundRemover : public AbstractClient<Cloud>,
   mutable int _counter = 0;
 };
 
+void consume_print_one( const cv::Mat& image,
+                        const cv::Mat& angle_image,
+                        const Radians& threshold);
+
+void consume_print_two( const cv::Mat& image,
+                        const cv::Mat& angle_image,
+                        const Radians& threshold);
+cv::Mat ZeroOutGround_two(const cv::Mat& image,
+                          const cv::Mat& angle_image,
+                          const Radians& threshold);
+
+cv:: Mat ZeroOutGround_me_two(const cv::Mat& image,
+                              const cv::Mat& angle_image,
+                              const Radians& threshold);
 
 void consume_thread_one(const cv::Mat& depth_image,
                     const Radians& threshold);
@@ -157,7 +183,7 @@ void consume_thread_two(const cv::Mat& depth_image,
 cv::Mat ZeroOutGround_origin(const cv::Mat& image,
                          const cv::Mat& angle_image,
                          const Radians& threshold);
-cv::Mat CreateAngleImage_me(const cv:: Mat& depth_image/*, std::vector<float> sines_vec1, std::vector<float> cosines_vec1*/);
+cv::Mat CreateAngleImage_me(const cv:: Mat& depth_image);
 cv::Mat RepairDepth_me(const cv::Mat& depth_image);
 cv::Mat ApplySavitskyGolaySmoothing_me(const cv::Mat& image,
                                        int window_size);

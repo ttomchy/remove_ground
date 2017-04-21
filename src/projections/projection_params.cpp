@@ -65,10 +65,11 @@ vector<Radians> ProjectionParams::FillVector(const Radians& start_angle,
 
   Radians rad = start_angle;
   for (int i = 0; i < num; ++i) {
-    res.push_back(rad);//where does it define the push_back function ?
+    res.push_back(rad);
     rad += step;//  
   }
   return res;
+
 }
 
 void ProjectionParams::SetSpan(const Radians& start_angle,
@@ -106,6 +107,7 @@ bool ProjectionParams::valid() {
 const Radians ProjectionParams::AngleFromRow(int row) const {
   //std::cout<<" Now it runs in the AngleFromRow function !"<<std::endl;
   if (row >= 0 && static_cast<size_t>(row) < _row_angles.size()) {
+  // std::cout<<" the value of the row !"<<row<<std::endl;
     return _row_angles[row];
   }
   fprintf(stderr, "ERROR: row %d is wrong\n", row);
@@ -114,12 +116,16 @@ const Radians ProjectionParams::AngleFromRow(int row) const {
 
 const Radians ProjectionParams::AngleFromCol(int col) const {
   int actual_col = col;
+ // std::cout<<" the value of the _col_angles.size():"<<_col_angles.size()<<std::endl;
   if (col < 0) {
     actual_col = col + _col_angles.size();
+    //std::cout<<" the value of the actual_col"<<actual_col<<std::endl;
   } else if (static_cast<size_t>(col) >= _col_angles.size()) {
     actual_col = col - _col_angles.size();
   }
   // everything is normal
+  //std::cout<<" the value of the actual_col"<<actual_col<<std::endl;
+  //在这里返回的就是_col_angle[0,1,2,3,4,...]
   return _col_angles[actual_col];
 }
 
@@ -285,6 +291,10 @@ void ProjectionParams::FillCosSin() {
   _row_angles_sines.clear();
   _row_angles_cosines.clear();
   for (const auto& angle : _row_angles) {
+
+  //  std::cout<<"  the value is angle.val()"<<angle.val()<<std::endl;
+  //  std::cout<<"  the value is sin(angle.val())"<<sin(angle.val())<<std::endl;
+
     _row_angles_sines.push_back(sin(angle.val()));
     _row_angles_cosines.push_back(cos(angle.val()));
   }

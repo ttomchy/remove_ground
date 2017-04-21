@@ -42,6 +42,7 @@ namespace depth_clustering {
  *             of converting to and from pcl. Also knows how to generate a
  *             projection from its points and can be generated from an image.
  */
+
 class Cloud {
  public:
   using Ptr = shared_ptr<Cloud>;

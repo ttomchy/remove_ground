@@ -18,16 +18,12 @@
 
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
-
 #include <Eigen/Core>
-
 #include <list>
 #include <memory>
 #include <stdexcept>
 #include <vector>
-
 #include "projections/projection_params.h"
-
 #include "utils/radians.h"
 #include "utils/rich_point.h"
 #include "utils/useful_typedefs.h"
@@ -58,6 +54,7 @@ class CloudProjection {
    * @param[in]  points  The points
    */
   virtual void InitFromPoints(const std::vector<RichPoint>& points) = 0;
+  //virtual void InitFromPoints(const std::vector<RichPoint>& points) = 0;
 
   /**
    * @brief      Polymorphic clone of a projection.

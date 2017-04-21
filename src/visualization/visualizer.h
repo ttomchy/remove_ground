@@ -86,6 +86,7 @@ class Visualizer : public QGLViewer,
   mutable std::mutex _cloud_mutex;
 };
 
+
 }  // namespace depth_clustering
 
 #endif  // SRC_VISUALIZATION_VISUALIZER_H_

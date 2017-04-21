@@ -45,9 +45,11 @@ Visualizer::Visualizer(QWidget* parent)
 
 void Visualizer::draw() {
   std::cout<<"Now it runs in the Visualizer::draw() function in the visualize.cpp"<<std::endl;
-  lock_guard<mutex> guard(_cloud_mutex);
-  DrawCloud(_cloud);
+  lock_guard<mutex> guard(_cloud_mutex);//c++新特点，会自动解锁
+  DrawCloud(_cloud);//在这里画出所有的点云，从读取的图像哪里得到的深度图
+
   for (const auto& cluster : _cloud_obj_storer.object_clouds()) {
+
     Eigen::Vector3f center = Eigen::Vector3f::Zero();
     Eigen::Vector3f extent = Eigen::Vector3f::Zero();
     Eigen::Vector3f max_point(std::numeric_limits<float>::lowest(),
@@ -69,8 +71,9 @@ void Visualizer::draw() {
     if (min_point.x() < max_point.x()) {
       extent = max_point - min_point;
     }
-    DrawCube(center, extent);
+    DrawCube(center, extent);//在这里是把障碍物的用方框画出来
   }
+
 }
 
 void Visualizer::init() {
@@ -84,7 +87,7 @@ void Visualizer::DrawCloud(const Cloud& cloud) {
   glBegin(GL_POINTS);
   glColor3f(1.0f, 1.0f, 1.0f);
   for (const auto& point : cloud.points()) {
-    glVertex3f(point.x(), point.y(), point.z());
+    glVertex3f(point.x(),point.y(),point.z());//这里是画出所有的点云数据
   }
   glEnd();
   glPopMatrix();
@@ -97,10 +100,12 @@ void Visualizer::DrawCube(const Eigen::Vector3f& center,
   glScalef(scale.x(), scale.y(), scale.z());
   float volume = scale.x() * scale.y() * scale.z();
   if (volume < 30.0f && scale.x() < 6 && scale.y() < 6 && scale.z() < 6) {
-    glColor3f(0.0f, 0.2f, 0.9f);
+   // glColor3f(0.0f, 0.2f, 0.9f);
+    glColor3f(1.0f, 0.0f, 0.0f);
     glLineWidth(4.0f);
   } else {
-    glColor3f(0.3f, 0.3f, 0.3f);
+   // glColor3f(0.3f, 0.3f, 0.3f);
+    glColor3f(0.0f, 1.0f, 0.0f);
     glLineWidth(1.0f);
   }
   glBegin(GL_LINE_STRIP);
@@ -142,21 +147,28 @@ void Visualizer::DrawCube(const Eigen::Vector3f& center,
 
 Visualizer::~Visualizer() {}
 
+
 void Visualizer::OnNewObjectReceived(const Cloud& cloud, const int id) {
   std::cout<<"Now it runs in the Visualizer::OnNewObjectReceived function in the visualize.cpp"<<std::endl;
   lock_guard<mutex> guard(_cloud_mutex);
   _cloud = cloud;
 }
 
+
 void Visualizer::onUpdate() { this->update(); }
 
+
+
+//在这里是不同的函数，不要弄错了
 vector<Cloud> ObjectPtrStorer::object_clouds() const {
   lock_guard<mutex> guard(_cluster_mutex);
+  std::cout<<" Now it returns the _obj_clouds in the onUpdate function in the visualizer.cpp"<<std::endl;
   return _obj_clouds;
 }
 
 void ObjectPtrStorer::OnNewObjectReceived(const std::vector<Cloud>& clouds,
                                           const int id) {
+  //看起来好像是在这里收到了那个聚类的输出信息
   std::cout<<"Now it runs in the ObjectPtrStorer::OnNewObjectReceived function in the visualize.cpp"<<std::endl;
   lock_guard<mutex> guard(_cluster_mutex);
   _obj_clouds.clear();
@@ -166,6 +178,7 @@ void ObjectPtrStorer::OnNewObjectReceived(const std::vector<Cloud>& clouds,
   }
 
   if (_update_listener) {
+    std::cout<<"Now it runs in the before the _update_listener->onUpdate(); in the visualize.cpp"<<std::endl;
     _update_listener->onUpdate();
   }
 }

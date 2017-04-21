@@ -92,7 +92,6 @@ Cloud::Ptr ReadKittiCloud(const string& path) {
   }
   return cloud;
 }
-
 cv::Mat FixKITTIDepth(const cv::Mat& original) {
   std::cout<<"Now it runs in the FixKITTIDepth funciton! it is in the velodyne_utils.cpp"<<std::endl;
   cv::Mat fixed = original;
@@ -107,7 +106,6 @@ cv::Mat FixKITTIDepth(const cv::Mat& original) {
   }
   return fixed;
 }
-
 cv::Mat MatFromDepthPng(const string& path) {
   std::cout<<"Now it runs in the MatFromDepthPng funciton! it is in the velodyne_utils.cpp"<<std::endl;
   cv::Mat depth_image = cv::imread(path, CV_LOAD_IMAGE_ANYDEPTH);

@@ -31,21 +31,20 @@
 #include<mutex>
 #include <unistd.h>
 #include"show_objects_moosmann.h"
+#include <ros/ros.h>
+#include <std_msgs/String.h>
 
 using namespace std;
 
 test_define image_me,image_origin;
 
-static std::deque<test_define> image_buff_before;
-static std::deque<test_define> image_buff_after;
+
 
 namespace depth_clustering {
-
 using cv::Mat; 
 using cv::DataType;
 using std::to_string;
 using time_utils::Timer;
-//std::deque<test_my> image_buff_before;
 const cv::Point ANCHOR_CENTER = cv::Point(-1, -1);// opencv parameter 
 const int SAME_OUTPUT_TYPE = -1;
 int i = 0;
@@ -55,8 +54,16 @@ int num_curlable=0;
 int i_smooth=0;
 int i_binary_self_before=0;
 int i_binary_self_after=0;
-char image_name_before[6000];
-char image_name_after[6000];
+int i_save_binary_img_ori=0;
+int i_save_binary_img_me=0;
+char img_name_before[6000];
+char img_name_after[6000];
+char save_binary_img_ori[6000];
+char save_binary_img_me[6000];
+
+int id_origin=0;
+int id_me=0;
+
 void DepthGroundRemover::OnNewObjectReceived(const Cloud& cloud,
                                              const int sender_id) {
   // this can be done even faster if we switch to column-major implementation
@@ -67,41 +74,57 @@ void DepthGroundRemover::OnNewObjectReceived(const Cloud& cloud,
     return; //
   }
   Cloud cloud_copy(cloud);
- // const auto sines_vec = _params.RowAngleSines();//sin and cos functions
-
-  //std::vector<float>  sines_vec = _params.RowAngleSines();//sin and cos functions
-  //std::vector<float>  cosines_vec = _params.RowAngleCosines();//it is defined in the parameter.cpp
 
   const cv::Mat& depth_image =RepairDepth(cloud.projection_ptr()->depth_image());
-     //RepairDepth(cloud.projection_ptr()->depth_image(), 5, 1.0f);//now it turn to the RepairDepth function .
   Timer total_timer;
   // _ground_remove_angle=0.15078_deg;
   auto angle_image = CreateAngleImage(depth_image);//刚开始会在这里进行执行程
   auto smoothed_image = ApplySavitskyGolaySmoothing(angle_image, _window_size);
 
   auto no_ground_image =ZeroOutGround(depth_image, smoothed_image,
-                                         _ground_remove_angle);
+                                        _ground_remove_angle);
 
+  auto ground_image =Ground_image(depth_image, smoothed_image,
+                                        _ground_remove_angle);
+
+
+ // auto no_ground_image =ZeroOutGround_me_two(depth_image, smoothed_image,
+                     //    _ground_remove_angle);
+
+   // sprintf(scan_num, "%s%d%s", ".//result//scan_image//scan", ++scan_i, ".png");
+   // cv::imwrite(scan_num,depth_image);
+/*
   image_origin.key=no_ground_image;
   image_buff_before.push_front(image_origin);
+
+  int image_num_ori=image_buff_before.size();
+  ROS_ERROR("pusk_back one origin image ");
+  ROS_ERROR("the size of origin image queue %d ",image_num_ori);
+  */
+ //  m_mux.unlock();
+
+  std::thread thread_three(&consume_print_one ,depth_image,smoothed_image,_ground_remove_angle);
+  std::cout << " Now it run in before the thread_four function !"<<std::endl;
+  std::thread thread_four(&consume_print_two,depth_image,smoothed_image,_ground_remove_angle);
+  thread_three.join();
+  thread_four.join();
+
 /*  sprintf(image_name_before, "%s%d%s", ".//result//binary_self_before", ++i_binary_self_before, ".png");
   cv::imwrite(image_name_before,image_origin.key);
 */
-
-
+/*
+  m_mux.lock();
   auto no_ground_image_me=ZeroOutGround_me(depth_image, smoothed_image, _ground_remove_angle);
   image_me.key=no_ground_image_me;
   image_buff_after.push_front(image_me);
  // sprintf(image_name_after, "%s%d%s", ".//result//binary_self_after", ++i_binary_self_after, ".png");
-//  cv::imwrite(image_name_after,image_me.key);
-
+ // cv::imwrite(image_name_after,image_me.key);
+  m_mux.unlock();
+*/
  /*
     printf("consume one image \n");
     consume_image.key=image_buff.back();
-
-
-
-    // sleep(2);
+*/
 /*
   sprintf(image_name, "%s%d%s", "no_ground_image_before", ++i_no_ground_before, ".png");//保存的图片名
   cv::imwrite(image_name,no_ground_image);
@@ -112,45 +135,12 @@ void DepthGroundRemover::OnNewObjectReceived(const Cloud& cloud,
   sprintf(image_name, "%s%d%s", "no_ground_image_produced", ++i_no_ground_produced, ".png");//保存的图片名
   cv::imwrite(image_name,no_gnd_img.key);
 */
+  std::cout<<"  int the depth_ground_remove.cpp the value of  this->id() is :"<< this->id()<<std::endl;
   cloud_copy.projection_ptr()->depth_image() = no_ground_image;
+  //cloud_copy.projection_ptr()->depth_image() = ground_image;
   this->ShareDataWithAllClients(cloud_copy);
   _counter++;
   std::cout<<"the value of the _counter is :"<<_counter<<std::endl;
-  //  image_buff.pop_back();
- // m_mux.unlock();
-
-  //std::thread zero_out_product(product_thread, cloud.projection_ptr()->depth_image(), _ground_remove_angle/*,sines_vec,cosines_vec*/);
- // std::thread zero_out_consumer(consume_thread_one,depth_image,_ground_remove_angle);
- // zero_out_consumer=new std::thread(&consume_thread,depth_image,_ground_remove_angle );
-  //zero_out_product.join();
- //std::cout<<"Now it runs after the zero_out_product.join function !!! "<<std::endl;
- //auto no_ground_image = ZeroOutGround(depth_image, smoothed_image,
-                                     // _ground_remove_angle);
- // zero_out_consumer->join();
-
-/*
-    for (int r = 0; r < no_ground_image.rows; ++r) {
-        for (int c = 0; c < no_ground_image.cols; ++c) {
-
-                std::cout<<"the value of  no_ground_image.at<float>(r, c) is "<<no_ground_image.at<float>(r, c)<<std::endl;
-
-        }
-    }
-*/
-/*
-  fprintf(stderr, "INFO: Ground removed in %lu us\n", total_timer.measure());
- // cv::namedWindow("no_ground_image");
- // cv::imshow("no_ground_image", no_ground_image) ;
-   //
-  sprintf(image_name, "%s%d%s", "no_ground_image", ++i, ".png");//保存的图片名
-  cv::imwrite(image_name,no_ground_image);
-  Mat image=Mat::zeros( no_ground_image.rows,no_ground_image.cols,CV_8UC1);
- // image= cv::imread(image_name );
- // cv::imshow("image", image) ;
- */
- /*
-
-*/
 
 }
 
@@ -163,33 +153,48 @@ Mat DepthGroundRemover::ZeroOutGround(const cv::Mat& image,
   // But that's a start, so let's stick with it for now.
   std::cout<<" Now it runs in the ZeroOutGround function !"<<std::endl;
 
+
   Mat binary_self = Mat::zeros(image.rows,image.cols, CV_8UC1);
   Mat res = cv::Mat::zeros(image.size(), CV_32F);
   for (int r = 0; r < image.rows; ++r) {
     for (int c = 0; c < image.cols; ++c) {
       if (angle_image.at<float>(r, c) > threshold.val()) {
          // The value of the threshold.val() is 0.15708
-        res.at<float>(r, c) = image.at<float>(r, c);
-        binary_self.at<uchar>(r,c)=255;
+          res.at<float>(r, c) = image.at<float>(r, c);
+          binary_self.at<uchar>(r,c)=255;
+
       }
     }
   }
-  // Mat out;
-  //Mat element = getStructuringElement( 0,cv::Size(15,15));
-  // cv::erode(binary_self,out,element);
-  //cv::namedWindow( "out demo", CV_WINDOW_AUTOSIZE );
-  //cv::imshow("out",out);
-
-  // image_implent.key=binary_self;
-  //image_buff.push_front(image_implent);
-
-
-
-
-
     return res;
 }
 
+Mat DepthGroundRemover::Ground_image(const cv::Mat& image,
+                                      const cv::Mat& angle_image,
+                                      const Radians& threshold) const {
+    // TODO(igor): test if its enough to remove only values starting from the
+    // botom pixel. I don't like removing all values based on a threshold.
+    // But that's a start, so let's stick with it for now.
+    std::cout<<" Now it runs in the ZeroOutGround function !"<<std::endl;
+
+
+    Mat ground_res = cv::Mat::zeros(image.size(), CV_32F);
+    for (int r = 0; r < image.rows; ++r) {
+        for (int c = 0; c < image.cols; ++c) {
+            if (angle_image.at<float>(r, c) < threshold.val()) {
+                // The value of the threshold.val() is 0.15708
+                ground_res.at<float>(r, c) = image.at<float>(r, c);
+            }
+        }
+    }
+    return ground_res;
+}
+
+
+
+
+
+/*
 Mat DepthGroundRemover::ZeroOutGround_me(const cv::Mat& image,
                                       const cv::Mat& angle_image,
                                       const Radians& threshold) const {
@@ -198,44 +203,29 @@ Mat DepthGroundRemover::ZeroOutGround_me(const cv::Mat& image,
     // But that's a start, so let's stick with it for now.
     std::cout<<" Now it runs in the ZeroOutGround function !"<<std::endl;
 
-    Mat binary_self = Mat::zeros(image.rows,image.cols, CV_8UC1);
+    Mat binary_self_me = Mat::zeros(image.rows,image.cols, CV_8UC1);
     Mat res = cv::Mat::zeros(image.size(), CV_32F);
     for (int r = 0; r < image.rows; ++r) {
         for (int c = 0; c < image.cols; ++c) {
             if (angle_image.at<float>(r, c) > threshold.val()) {
                 // The value of the threshold.val() is 0.15708
                 res.at<float>(r, c) = image.at<float>(r, c);
-                binary_self.at<uchar>(r,c)=255;
+                binary_self_me.at<uchar>(r,c)=255;
             }
         }
     }
     Mat out;
-    //Mat element = getStructuringElement( 0,cv::Size(15,15));
-    // cv::erode(binary_self,out,element);
-    //cv::namedWindow( "out demo", CV_WINDOW_AUTOSIZE );
-    //cv::imshow("out",out);
-
     // image_implent.key=binary_self;
     //image_buff.push_front(image_implent);
-    /*
-       sprintf(image_name_before, "%s%d%s", ".//result//binary_self_before", ++i_binary_self_before, ".png");
-       cv::imwrite(image_name_before,binary_self);
-    */
 
-    /*
-       sprintf(image_name_after, "%s%d%s", ".//result//binary_self_after", ++i_binary_self_after, ".png");
-       cv::imwrite(image_name_after,out);
-    */
     Mat out_origin = cv::Mat::zeros(image.size(), CV_32F);
-
     cv::blur(res,out_origin,cv::Size(3,3),cv::Point(-1,-1));
 
-
-
-
-
+    cv::blur(binary_self_me,binary_self_me,cv::Size(3,3),cv::Point(-1,-1));
     return out_origin;
 }
+*/
+
 Mat DepthGroundRemover::ZeroOutGroundBFS(const cv::Mat& image,
                                          const cv::Mat& angle_image,
                                          const Radians& threshold,
@@ -262,7 +252,7 @@ Mat DepthGroundRemover::ZeroOutGroundBFS(const cv::Mat& image,
     auto current_coord = PixelCoord(r, c);
 
     //now it turn into the liner_image_lable.h 在这里输出不是1 就是0 啊
-   uint16_t current_label = image_labeler.LabelAt(current_coord);
+    uint16_t current_label = image_labeler.LabelAt(current_coord);
 
     // std::cout<<"The value of current_lable is :"<<current_label<<std::endl;
 
@@ -270,7 +260,6 @@ Mat DepthGroundRemover::ZeroOutGroundBFS(const cv::Mat& image,
         // this coord was already labeled, skip//如果这里的标签是1 的话说明早就已经是被标记过了
         continue;
       }
-
 
 
    /*
@@ -300,8 +289,6 @@ Mat DepthGroundRemover::ZeroOutGroundBFS(const cv::Mat& image,
         }
      }
     std::cout<<"the value of  count_num is :"<<count_num<<std::endl;
-
-
 */
   auto label_image_ptr = image_labeler.GetLabelImage();//得到标签
   std::cout<<"Now it runs after the  image_labeler.GetLabelImage();  in the ground remove.cpp"<<std::endl;
@@ -323,7 +310,6 @@ Mat DepthGroundRemover::ZeroOutGroundBFS(const cv::Mat& image,
         // all unlabeled points are non-ground
           res.at<float>(r, c) = image.at<float>(r, c);
           binary_self.at<uchar>(r,c)=255;
-
        /*
           if(image.at<float>(r, c)==0){
               count_num++;
@@ -344,7 +330,7 @@ Mat DepthGroundRemover::ZeroOutGroundBFS(const cv::Mat& image,
 
    // sprintf(image_name, "%s%d%s", "binary_self", ++i, ".png");//保存的图片名
    // cv::medianBlur(binary_self,out,3);
-    //cv::imwrite(image_name,out);
+   //cv::imwrite(image_name,out);
 
   return res;
 
@@ -358,7 +344,7 @@ Mat DepthGroundRemover::ZeroOutGroundBFS(const cv::Mat& image,
   for (int c = 0; c < inpainted_depth.cols; ++c) {
     for (int r = 0; r < inpainted_depth.rows; ++r) {
       float& curr_depth = inpainted_depth.at<float>(r, c);
-   //   std::cout<<"the value of  curr_depth  is :"<<curr_depth <<std::endl;
+      //std::cout<<"the value of  curr_depth  is :"<<curr_depth <<std::endl;
       if (curr_depth < 0.001f) {
        //  std::cout<<"the value of r is"<<r<<std::endl;
 
@@ -400,7 +386,6 @@ Mat DepthGroundRemover::ZeroOutGroundBFS(const cv::Mat& image,
       }
     }
   }
-    //  std::cout<<"the value of  i_count  is :"<<i_count <<std::endl;
   return inpainted_depth;
 }
 
@@ -422,9 +407,11 @@ Mat DepthGroundRemover::CreateAngleImage(const Mat& depth_image) {
   Mat angle_image = Mat::zeros(depth_image.size(), DataType<float>::type);
   Mat x_mat = Mat::zeros(depth_image.size(), DataType<float>::type);
   Mat y_mat = Mat::zeros(depth_image.size(), DataType<float>::type);
-  const auto& sines_vec = _params.RowAngleSines();//sin and cos functions 
+  const auto& sines_vec = _params.RowAngleSines();//sin and cos functions
   const auto& cosines_vec = _params.RowAngleCosines();//it is defined in the parameter.cpp
   float dx, dy;
+
+
   x_mat.row(0) = depth_image.row(0) * cosines_vec[0];
   y_mat.row(0) = depth_image.row(0) * sines_vec[0];
   for (int r = 1; r < angle_image.rows; ++r) {
@@ -685,6 +672,109 @@ Radians DepthGroundRemover::GetLineAngle(const Mat& depth_image, int col,
         fout.close();
     }
 
+void  consume_print_one( const cv::Mat& image,
+                         const cv::Mat& angle_image,
+                         const Radians& threshold){
+
+    std::cout<<" Now it run in the thread_three function !"<<std::endl;
+    m_mux.lock();
+    auto no_ground_image =ZeroOutGround_two(image, angle_image,threshold);
+     ++id_origin;
+    image_origin.id=id_origin;
+    std::cout<<" id_origin is:"<<id_origin<<std::endl;
+    image_origin.key=no_ground_image;
+    image_buff_before.push_front(image_origin);
+
+    int image_num_ori=image_buff_before.size();
+    ROS_ERROR("pusk_back one ZeroOutGround_two origin image ");
+    ROS_ERROR("the size of  image_buff_before queue %d ",image_num_ori);
+
+    std::cout<<"The value of the image_buff_before image queue is :"<< image_num_ori<<std::endl;
+    //sprintf(img_name_after, "%s%d%s", ".//result//binary_self_consume_print_two_ori", ++i_binary_self_before, ".png");
+   // cv::imwrite(img_name_after,image_origin.key);
+    m_mux.unlock();
+}
+
+void consume_print_two( const cv::Mat& image,
+                        const cv::Mat& angle_image,
+                        const Radians& threshold){
+
+    std::cout<<" Now it run in the thread_four function !"<<std::endl;
+    m_mux.lock();
+    auto no_ground_image_me =ZeroOutGround_me_two(image, angle_image,threshold);
+    ++id_me;
+    image_me.id=id_me;
+    std::cout<<" id_me is:"<<id_me<<std::endl;
+    image_me.key=no_ground_image_me;
+    image_buff_after.push_front(image_me);
+    int image_num_me=image_buff_after.size();
+    ROS_ERROR("pusk_back ZeroOutGround_me_two me image ");
+    ROS_ERROR("the size of image_buff_after image queue %d ",image_num_me);
+    std::cout<<"The value of the image_buff_after  image queue is :"<< image_num_me<<std::endl;
+   // sprintf(img_name_after, "%s%d%s", ".//result//binary_self_afterconsume_print_two", ++i_binary_self_after, ".png");
+  //  cv::imwrite(img_name_after,image_me.key);
+    m_mux.unlock();
+
+
+}
+cv::Mat ZeroOutGround_two(const cv::Mat& image,
+                                      const cv::Mat& angle_image,
+                                      const Radians& threshold)  {
+    // TODO(igor): test if its enough to remove only values starting from the
+    // botom pixel. I don't like removing all values based on a threshold.
+    // But that's a start, so let's stick with it for now.
+    std::cout<<" Now it runs in the ZeroOutGround two function !"<<std::endl;
+
+    Mat binary_self_ori = Mat::zeros(image.rows,image.cols, CV_8UC1);
+    Mat res = cv::Mat::zeros(image.size(), CV_32F);
+    for (int r = 0; r < image.rows; ++r) {
+        for (int c = 0; c < image.cols; ++c) {
+            if (angle_image.at<float>(r, c) > threshold.val()) {
+                // The value of the threshold.val() is 0.15708
+                res.at<float>(r, c) = image.at<float>(r, c);
+                binary_self_ori.at<uchar>(r,c)=255;
+            }
+
+        }
+    }
+
+
+
+    sprintf(save_binary_img_ori, "%s%d%s", ".//result//binary_ground_removal//binary_ground_removal", ++i_save_binary_img_ori, ".png");//保存的图片名
+    cv::imwrite(save_binary_img_ori,binary_self_ori);
+    return res;
+
+}
+
+cv:: Mat ZeroOutGround_me_two(const cv::Mat& image,
+                                         const cv::Mat& angle_image,
+                                         const Radians& threshold)  {
+    // TODO(igor): test if its enough to remove only values starting from the
+    // botom pixel. I don't like removing all values based on a threshold.
+    // But that's a start, so let's stick with it for now.
+    std::cout<<" Now it runs in the ZeroOutGround_me_two function !"<<std::endl;
+
+    Mat binary_self_me = Mat::zeros(image.rows,image.cols, CV_8UC1);
+    Mat res = cv::Mat::zeros(image.size(), CV_32F);
+    for (int r = 0; r < image.rows; ++r) {
+        for (int c = 0; c < image.cols; ++c) {
+            if (angle_image.at<float>(r, c) > threshold.val()) {
+                // The value of the threshold.val() is 0.15708
+                res.at<float>(r, c) = image.at<float>(r, c);
+                binary_self_me.at<uchar>(r,c)=255;
+            }
+        }
+    }
+    Mat out;
+    Mat out_origin = cv::Mat::zeros(image.size(), CV_32F);
+    cv::blur(res,out_origin,cv::Size(3,3),cv::Point(-1,-1));
+  //  cv::blur(binary_self_me,binary_self_me,cv::Size(3,3),cv::Point(-1,-1));
+    //Mat resutl;
+    cv::medianBlur(binary_self_me,binary_self_me,7);
+    sprintf(save_binary_img_me, "%s%d%s", ".//result//proposed_ground_removal//proposed_ground_removal", ++i_save_binary_img_me, ".png");//保存的图片名
+    cv::imwrite(save_binary_img_me,binary_self_me);
+    return out_origin;
+}
 
 
 

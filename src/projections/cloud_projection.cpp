@@ -44,7 +44,7 @@ RichPoint CloudProjection::UnprojectPoint(const cv::Mat& image, const int row,
   RichPoint point{depth * cosf(angle_z.val()) * cosf(angle_xy.val()),
                   depth * cosf(angle_z.val()) * sinf(angle_xy.val()),
                   depth * sinf(angle_z.val())};
-  return point;
+  return point; //在这里的话每个点都有了他们的三维坐标值
 }
 
 void CloudProjection::CheckCloudAndStorage(

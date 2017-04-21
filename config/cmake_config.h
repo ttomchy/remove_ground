@@ -10,6 +10,6 @@
 #endif
 
 #include <string>
-const std::string SOURCE_PATH = "/home/hadoop/work_space/laser_ws/src/remove_ground";
+const std::string SOURCE_PATH = "/home/chenhy/work_space/laser_ws/src/remove_ground";
 
 #endif  // SRC_DEPTH_CLUSTERING_CONFIG_CMAKE_CONFIG_H_
