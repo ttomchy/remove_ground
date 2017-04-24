@@ -45,7 +45,7 @@
 test_define no_gnd_img,read_depth_img ;
 
 test_define read_origin_gnd_remove_depth_img ,read_me_gnd_remove_depth_img;
-
+test_define no_ground_img;
 using std::string;
 using std::to_string;
 int i_depth_image=0;
@@ -78,7 +78,7 @@ void ReadData(const Radians& angle_tollerance, const string& in_path
     std::cout<<" Now it runs in the product_thread OnNewObjectReceived function  in the ground_remove.cpp!"<<std::endl;
 
     fprintf(stderr, "INFO: running on Moosman data\n");
-
+   // sleep(2);
     auto image_reader =
             FolderReader(in_path, ".png", FolderReader::Order::SORTED);
     auto config_reader = FolderReader(in_path, "img.cfg");
@@ -86,11 +86,10 @@ void ReadData(const Radians& angle_tollerance, const string& in_path
     auto proj_params_ptr =
             ProjectionParams::FromConfigFile(config_reader.GetNextFilePath());
 
-    for (const auto& path : image_reader.GetAllFilePaths()) {
+    for (const auto& path : image_reader.GetAllFilePaths()) {\
 
         m_mux.lock();
         auto depth_image = MatFromDepthPng(path);
-
         no_gnd_img.key=depth_image;
         image_buff.push_front(no_gnd_img);
 
@@ -100,7 +99,6 @@ void ReadData(const Radians& angle_tollerance, const string& in_path
         ROS_WARN("the size of product queue %d ",image_num);
       //  sprintf(scan_num, "%s%d%s", ".//result//scan_image//scan", ++scan_i, ".png");
       //  cv::imwrite(scan_num,depth_image);
-
         m_mux.unlock();
     }
 
@@ -117,13 +115,14 @@ void consume_thread(const Radians& angle_tollerance,const string& in_path ,Visua
     auto depth_ground_remover = DepthGroundRemover(
             *proj_params_ptr, ground_remove_angle, smooth_window_size);
 
-
     ImageBasedClusterer<LinearImageLabeler<>> clusterer(
             angle_tollerance, min_cluster_size, max_cluster_size);
     clusterer.SetDiffType(DiffFactory::DiffType::ANGLES);
 
     depth_ground_remover.AddClient(&clusterer);
     clusterer.AddClient(visualizer->object_clouds_client());
+
+
 
     while (true) {
         if (image_buff.empty()) {
@@ -137,13 +136,44 @@ void consume_thread(const Radians& angle_tollerance,const string& in_path ,Visua
         image_buff.pop_back();
         ROS_ERROR("consume one image ");
         ROS_ERROR("the size of image_buff queue %d ",image_num);
-        auto cloud_ptr = Cloud::FromImage(read_depth_img.key, *proj_params_ptr);
-        time_utils::Timer timer;
-        std::cout<<"Now it run in the show_objects_moosmann.cpp  before the visualizer->OnNewObjectReceived(*cloud_ptr, 0); "<<std::endl;
-        visualizer->OnNewObjectReceived(*cloud_ptr, 0);
-        std::cout<<"Now it run in the show_objects_moosmann.cpp  before the  depth_ground_remover.OnNewObjectReceived(*cloud_ptr, 0); "<<std::endl;
-        depth_ground_remover.OnNewObjectReceived(*cloud_ptr, 0);
 
+        auto cloud_ptr = Cloud::FromImage(read_depth_img.key, *proj_params_ptr);
+
+        /*
+        if (image_buff_before.empty()) {
+           std::cout<<" the image_buff_before is empty !!! "<<std::endl;
+        }
+
+        else {
+
+            no_ground_img = image_buff_before.back();
+            auto cloud_ptr_me = Cloud::FromImage(no_ground_img.key, *proj_params_ptr);
+
+            //  auto cloud_ptr_me = Cloud::FromImage(read_depth_img.key, *proj_params_ptr);
+        */
+            time_utils::Timer timer;
+            std::cout
+                    << "Now it run in the show_objects_moosmann.cpp  before the visualizer->OnNewObjectReceived(*cloud_ptr, 0); "
+                    << std::endl;
+             visualizer->OnNewObjectReceived(*cloud_ptr, 0);
+
+           // visualizer->OnNewObjectReceived(*cloud_ptr_me, 0);
+            // sleep(1);
+            // visualizer->DrawCloud(*cloud_ptr);
+            /*
+            for (const auto& point : cloud_ptr->points()) {
+                // glVertex3f(point.x(),point.y(),point.z());//这里是画出所有的点云数据
+                std::cout<<" the value of the point.x() is  "<< point.x()<<std::endl;
+                std::cout<<" the value of the point.y() is  "<< point.y()<<std::endl;
+                std::cout<<" the value of the point.z() is  "<< point.z()<<std::endl;
+
+            }
+            */
+            std::cout
+                    << "Now it run in the show_objects_moosmann.cpp  before the  depth_ground_remover.OnNewObjectReceived(*cloud_ptr, 0); "
+                    << std::endl;
+            depth_ground_remover.OnNewObjectReceived(*cloud_ptr, 0);
+      //  }
     }
 }
 
@@ -175,6 +205,13 @@ int main(int argc, char* argv[]) {
     // visualizer should be created from a gui thread
     Visualizer visualizer;
     visualizer.show();
+   // visualizer.show();
+
+
+
+   // visualizer_me.show();
+
+
 
     // create and run loader thread
     std::cout<<" Now it runs before the load_thread ！"<<std::endl;

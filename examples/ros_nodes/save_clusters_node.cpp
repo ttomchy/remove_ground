@@ -33,6 +33,7 @@ using std::string;
 using namespace depth_clustering;
 
 int main(int argc, char* argv[]) {
+  /*
   TCLAP::CmdLine cmd(
       "Subscribe to /velodyne_points topic and save clusters to disc.", ' ',
       "1.0");
@@ -103,4 +104,5 @@ int main(int argc, char* argv[]) {
   subscriber.StartListeningToRos();
   ros::spin();
   return 0;
+   */
 }

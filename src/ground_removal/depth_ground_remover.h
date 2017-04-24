@@ -74,6 +74,8 @@ class DepthGroundRemover : public AbstractClient<Cloud>,
                        const Radians& threshold) const;
 
 
+  cv::Mat NO_Ground_image(const cv::Mat& image, const cv::Mat& angle_image,
+                         const Radians& threshold) const;
 
 
 

@@ -32,7 +32,8 @@ namespace depth_clustering {
 
 class IUpdateListener {
  public:
-  virtual void onUpdate() = 0;
+ virtual void onUpdate() = 0;
+
 };
 
 class ObjectPtrStorer : public AbstractClient<std::vector<Cloud>> {
@@ -42,6 +43,13 @@ class ObjectPtrStorer : public AbstractClient<std::vector<Cloud>> {
   void OnNewObjectReceived(const std::vector<Cloud>& clouds,
                            const int id) override;
 
+
+//  void OnNewObjectReceived_me(const std::vector<Cloud>& clouds) override;
+
+//  void OnDoubleReceived(const std::vector<Cloud>& clouds_1, const std::vector<Cloud>& clouds_2, const int sender_id) override;
+//
+//  void hello_wld(const std::string str) override;
+
   void SetUpdateListener(IUpdateListener* update_listener) {
     _update_listener = update_listener;
   }
@@ -50,11 +58,19 @@ class ObjectPtrStorer : public AbstractClient<std::vector<Cloud>> {
 
   std::vector<Cloud> object_clouds() const;
 
- private:
+  std::vector<Cloud> object_clouds_me() const;
+
+
+private:
   std::vector<Cloud> _obj_clouds;
+
+  std::vector<Cloud> _obj_clouds_ori;
+  std::vector<Cloud> _obj_clouds_me;
+
   IUpdateListener* _update_listener;
   mutable std::mutex _cluster_mutex;
 };
+
 
 /**
  * @brief      An OpenGl visualizer that shows data that is subscribes to.
@@ -67,21 +83,23 @@ class Visualizer : public QGLViewer,
   virtual ~Visualizer();
 
   void OnNewObjectReceived(const Cloud& cloud, const int id) override;
-
   void onUpdate() override;
-
+  void DrawCloud(const Cloud& cloud);
   ObjectPtrStorer* object_clouds_client() { return &_cloud_obj_storer; }
-
- protected:
   void draw() override;
+ protected:
+
   void init() override;
 
  private:
-  void DrawCloud(const Cloud& cloud);
+  //void DrawCloud(const Cloud& cloud);
   void DrawCube(const Eigen::Vector3f& center, const Eigen::Vector3f& scale);
-
+  void DrawCube_me(const Eigen::Vector3f& center, const Eigen::Vector3f& scale);
   bool _updated;
+
   ObjectPtrStorer _cloud_obj_storer;
+
+
   Cloud _cloud;
   mutable std::mutex _cloud_mutex;
 };

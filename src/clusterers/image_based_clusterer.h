@@ -35,10 +35,17 @@
 #include "image_labelers/diff_helpers/diff_factory.h"
 #include "image_labelers/linear_image_labeler.h"
 #include "projections/cloud_projection.h"
+#include "visualization/visualizer.h"
+
+#include "communication/abstract_client.h"
+#include "utils/cloud.h"
+#include "utils/useful_typedefs.h"
+#include <QGLViewer/qglviewer.h>
 char img_lable[6000];
 int  i_lable=0;
 test_define get_image_buff_before;
 test_define get_image_buff_after;
+int i_senter=0;
 namespace depth_clustering {
 
 /**
@@ -107,7 +114,6 @@ class ImageBasedClusterer : public AbstractClusterer {
    // sprintf(img_lable, "%s%d%s", ".//result//image_lable//image_lable", ++i_lable, ".png");
    // cv::imwrite(img_lable,cloud.projection_ptr()->depth_image());
 
-   // cluster_me( cloud);
     std::vector<Cloud> return_origin_cluster;
     std::vector<Cloud> return_me_cluster;
     if ((image_buff_before.empty())&(image_buff_after.empty())) {
@@ -128,21 +134,22 @@ class ImageBasedClusterer : public AbstractClusterer {
         return_me_cluster = cluster_me(cloud,get_image_buff_after.key);
         //在这里是第二个模块聚类的输出结果　
         std::cout<<"int the image_based_clustered.h the value of  this->id() is :"<< this->id()<<std::endl;
-        std::cout << "Now it runs in last of the image_based_clustered.cpp !!!" << std::endl;
+        std::cout << "Now it runs in last of the image_based_clustered.h!!!" << std::endl;
         this->ShareDataWithAllClients(return_origin_cluster);
+        ++i_senter;
+        if (i_senter==1){
+          this->ShareDataWithAllClients(return_me_cluster);
+        }
       }
+
+
     }
   }
-
-
-
 std::vector <Cloud> cluster_me(const Cloud& cloud,const cv::Mat& depth_image){
-
   time_utils::Timer timer;
   std::cout<<"now it is runs before the  LabelerT image_labeler(cloud.projection_  in the image_based_clustered.h !!! "<<std::endl;
   LabelerT image_labeler(depth_image,
                          cloud.projection_ptr()->params(), _angle_tollerance);
-
   std::cout<<"now it is runs after the  LabelerT image_labeler(cloud.projection_  in the image_based_clustered.h !!! "<<std::endl;
   std::cout<<"now it is runs before the  ComputeLabels function in the image_based_clustered.h !!! "<<std::endl;
   image_labeler.ComputeLabels(_diff_type);
@@ -179,12 +186,9 @@ std::vector <Cloud> cluster_me(const Cloud& cloud,const cv::Mat& depth_image){
       }
     }
   }
-
-
   //now send clusters to clients. They can't wait to get a new cloud.
   //现在开始发送给新的客户端， they  cann't wait to get the point .
   //auto labels_color = AbstractImageLabeler::LabelsToColor(*labels_ptr);
-
 
   _counter++;
   std::vector<Cloud> clusters_to_send;
@@ -209,7 +213,5 @@ private:
 };
 
 }  // namespace depth_clustering
-
-
 
 #endif  // SRC_CLUSTERERS_IMAGE_BASED_CLUSTERER_H_

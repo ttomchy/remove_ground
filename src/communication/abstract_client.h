@@ -32,6 +32,15 @@ class AbstractClient : public virtual Identifiable {
   virtual ~AbstractClient() {}
   virtual void OnNewObjectReceived(const ObjType& object,
                                    const int sender_id) = 0;
+
+//  virtual void OnDoubleReceived(const ObjType& obj_1, const ObjType& obj_2, const int sender_id) = 0;
+//  virtual void hello_wld(const std::string str);
+  /*virtual void OnNewObjectReceived_me  (ObjType& object,ObjType& object_me,
+    const int sender_id) = 0;
+  */
+
+
+
 };
 
 }  // namespace depth_clustering

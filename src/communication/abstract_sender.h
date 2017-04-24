@@ -49,6 +49,7 @@ class AbstractSender : public virtual Identifiable {
   /**
    * @brief      Gets type of sender as string.
    *
+   *
    * @return     Type as string
    */
   const char* type() const {
@@ -145,7 +146,15 @@ class AbstractSender : public virtual Identifiable {
       kv.second->OnNewObjectReceived(obj, id_to_use);
     }
   }
+/*
+  void ShareDataWithAllClients_me(const ObjSendType& obj,const ObjSendType& obj_me, int id = -1) { //more买的ID为-1
+    int id_to_use = id >= 0 ? id : this->id();
+    for (auto& kv : _clients) {
+      kv.second->OnNewObjectReceived_me(obj, obj_me,id_to_use);
+    }
+  }
 
+*/
  protected:
   using IdClientMapping = std::map<int, AbstractClient<ObjSendType>*>;
 
