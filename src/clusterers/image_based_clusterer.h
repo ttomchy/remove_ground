@@ -102,48 +102,47 @@ class ImageBasedClusterer : public AbstractClusterer {
 
   void OnNewObjectReceived(const Cloud& cloud, const int sender_id) override {
 
-    std::cout<<"Now it runs int the image_lable_cluster.h on new object received"<<std::endl;
-    // generate a projection from a point cloud
-    if (!cloud.projection_ptr()) {
-      fprintf(stderr, "ERROR: projection not initialized in cloud.\n");
-      fprintf(stderr, "INFO: cannot label this cloud.\n");
-      return;
-    }
-
-    //在这里的输入果然是已经去除掉地面的图像了
-   // sprintf(img_lable, "%s%d%s", ".//result//image_lable//image_lable", ++i_lable, ".png");
-   // cv::imwrite(img_lable,cloud.projection_ptr()->depth_image());
-
-    std::vector<Cloud> return_origin_cluster;
-    std::vector<Cloud> return_me_cluster;
-    if ((image_buff_before.empty())&(image_buff_after.empty())) {
-      std::cout<<"one_of_the  image_buff_before or image_buff_after is empty!!! "<<std::endl;
-     // continue;
-    }
-    else {
-      get_image_buff_before = image_buff_before.back();
-      image_buff_before.pop_back();
-      std::cout << " the value of the get_image_buff_before.id is :" << get_image_buff_before.id << std::endl;
-
-      get_image_buff_after = image_buff_after.back();
-      image_buff_after.pop_back();
-      std::cout << " the value of the get_image_buff_after.id is :" << get_image_buff_after.id << std::endl;
-
-      if (get_image_buff_before.id == get_image_buff_after.id) {
-        return_origin_cluster = cluster_me(cloud,get_image_buff_before.key);
-        return_me_cluster = cluster_me(cloud,get_image_buff_after.key);
-        //在这里是第二个模块聚类的输出结果　
-        std::cout<<"int the image_based_clustered.h the value of  this->id() is :"<< this->id()<<std::endl;
-        std::cout << "Now it runs in last of the image_based_clustered.h!!!" << std::endl;
-        this->ShareDataWithAllClients(return_origin_cluster);
-        ++i_senter;
-        if (i_senter==1){
-          this->ShareDataWithAllClients(return_me_cluster);
-        }
+      std::cout << "Now it runs int the image_lable_cluster.h on new object received" << std::endl;
+      // generate a projection from a point cloud
+      if (!cloud.projection_ptr()) {
+          fprintf(stderr, "ERROR: projection not initialized in cloud.\n");
+          fprintf(stderr, "INFO: cannot label this cloud.\n");
+          return;
       }
 
+      //在这里的输入果然是已经去除掉地面的图像了
+      // sprintf(img_lable, "%s%d%s", ".//result//image_lable//image_lable", ++i_lable, ".png");
+      // cv::imwrite(img_lable,cloud.projection_ptr()->depth_image());
 
-    }
+      std::vector <Cloud> return_origin_cluster;
+      std::vector <Cloud> return_me_cluster;
+
+          if ((image_buff_before.empty()) & (image_buff_after.empty())) {
+              std::cout << "one_of_the  image_buff_before or image_buff_after is empty!!! " << std::endl;
+              // continue;
+          } else {
+              get_image_buff_before = image_buff_before.back();
+              image_buff_before.pop_back();
+              std::cout << " the value of the get_image_buff_before.id is :" << get_image_buff_before.id << std::endl;
+
+              get_image_buff_after = image_buff_after.back();
+              image_buff_after.pop_back();
+              std::cout << " the value of the get_image_buff_after.id is :" << get_image_buff_after.id << std::endl;
+
+              if (get_image_buff_before.id == get_image_buff_after.id) {
+                  return_origin_cluster = cluster_me(cloud, get_image_buff_before.key);
+                  return_me_cluster = cluster_me(cloud, get_image_buff_after.key);
+                  //在这里是第二个模块聚类的输出结果　
+                  std::cout << "int the image_based_clustered.h the value of  this->id() is :" << this->id()
+                            << std::endl;
+                  std::cout << "Now it runs in last of the image_based_clustered.h!!!" << std::endl;
+                  this->ShareDataWithAllClients(return_origin_cluster);
+                  ++i_senter;
+                  if (i_senter == 1) {
+                      this->ShareDataWithAllClients(return_me_cluster);
+                  }
+              }
+          }
   }
 std::vector <Cloud> cluster_me(const Cloud& cloud,const cv::Mat& depth_image){
   time_utils::Timer timer;
@@ -189,7 +188,6 @@ std::vector <Cloud> cluster_me(const Cloud& cloud,const cv::Mat& depth_image){
   //now send clusters to clients. They can't wait to get a new cloud.
   //现在开始发送给新的客户端， they  cann't wait to get the point .
   //auto labels_color = AbstractImageLabeler::LabelsToColor(*labels_ptr);
-
   _counter++;
   std::vector<Cloud> clusters_to_send;
   for (auto& kv : clusters) {
@@ -211,7 +209,5 @@ private:
   AbstractClient<cv::Mat>* _label_client;
   DiffFactory::DiffType _diff_type = DiffFactory::DiffType::NONE;
 };
-
 }  // namespace depth_clustering
-
 #endif  // SRC_CLUSTERERS_IMAGE_BASED_CLUSTERER_H_

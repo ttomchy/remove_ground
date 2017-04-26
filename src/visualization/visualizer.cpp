@@ -34,20 +34,19 @@ using std::string;
 using std::vector;
 using std::thread;
 using std::lock_guard;
-
 static vector<array<int, 3>> COLORS;
-
 Visualizer::Visualizer(QWidget* parent)
     : QGLViewer(parent), AbstractClient<Cloud>(), _updated{false} {
   _cloud_obj_storer.SetUpdateListener(this);
 
 }
-
 void Visualizer::draw() {
   std::cout<<"Now it runs in the Visualizer::draw() function in the visualize.cpp"<<std::endl;
   lock_guard<mutex> guard(_cloud_mutex);//c++新特点，会自动解锁
-  DrawCloud(_cloud);//在这里画出所有的点云，从读取的图像哪里得到的深度图
 
+
+
+    DrawCloud(_cloud);//在这里画出所有的点云，从读取的图像哪里得到的深度图
   for (const auto& cluster : _cloud_obj_storer.object_clouds()) {
     Eigen::Vector3f center = Eigen::Vector3f::Zero();
     Eigen::Vector3f extent = Eigen::Vector3f::Zero();
@@ -72,7 +71,6 @@ void Visualizer::draw() {
     }
     DrawCube(center, extent);//在这里是把障碍物的用方框画出来
   }
-
   for (const auto& cluster_me :_cloud_obj_storer.object_clouds_me()) {
         Eigen::Vector3f center_me = Eigen::Vector3f::Zero();
         Eigen::Vector3f extent_me = Eigen::Vector3f::Zero();
@@ -95,10 +93,10 @@ void Visualizer::draw() {
         if (min_point.x() < max_point.x()) {
             extent_me = max_point - min_point;
         }
-        DrawCube_me(center_me, extent_me);//在这里是把障碍物的用方框画出来
+       // DrawCube_me(center_me, extent_me);//在这里是把障碍物的用方框画出来
+      DrawCube_mecly(center_me, extent_me);
   }
-
-    std::cout<<"Now it runs in the end of Visualizer::draw() function in the visualize.cpp"<<std::endl;
+   std::cout<<"Now it runs in the end of Visualizer::draw() function in the visualize.cpp"<<std::endl;
 }
 
 
@@ -130,7 +128,7 @@ void Visualizer::DrawCube(const Eigen::Vector3f& center,
     glLineWidth(4.0f);
   } else {
     glColor3f(0.3f, 0.3f, 0.3f);
-   // glColor3f(0.0f, 1.0f, 0.0f);
+    //glColor3f(0.0f, 1.0f, 0.0f);
     glLineWidth(1.0f);
   }
   glBegin(GL_LINE_STRIP);
@@ -173,22 +171,21 @@ void Visualizer::DrawCube(const Eigen::Vector3f& center,
 void Visualizer::DrawCube_me(const Eigen::Vector3f& center,
                           const Eigen::Vector3f& scale) {
     glPushMatrix();
-    glTranslatef(center.x(), center.y(), center.z());
+    glTranslatef(center.x(), center.y(), center.z());//移动坐标系,直到移动到这些位置为止。
     glScalef(scale.x(), scale.y(), scale.z());
     float volume = scale.x() * scale.y() * scale.z();
     if (volume < 30.0f && scale.x() < 6 && scale.y() < 6 && scale.z() < 6) {
-        glColor3f(0.0f, 0.2f, 0.9f);
-       // glColor3f(1.0f, 0.0f, 0.0f);
+        glColor3f(0.0f, 1.0f, 0.0f);
         glLineWidth(4.0f);
     } else {
          glColor3f(0.3f, 0.3f, 0.3f);
-        //glColor3f(0.0f, 1.0f, 0.0f);
-        glLineWidth(1.0f);
+         //glColor3f(0.0f, 1.0f, 0.0f); //绿色
+         glLineWidth(1.0f);
     }
     glBegin(GL_LINE_STRIP);
 
     // Bottom of Box
-    glVertex3f(-0.5, -0.5, -0.5);
+    glVertex3f(-0.5, -0.5, -0.5);//在这里指定顶点
     glVertex3f(-0.5, -0.5, 0.5);
     glVertex3f(0.5, -0.5, 0.5);
     glVertex3f(0.5, -0.5, -0.5);
@@ -221,8 +218,28 @@ void Visualizer::DrawCube_me(const Eigen::Vector3f& center,
     glEnd();
     glPopMatrix();
 }
-    Visualizer::~Visualizer() {}
+    void Visualizer::DrawCube_mecly(const Eigen::Vector3f& center,
+                                    const Eigen::Vector3f& scale){
+        glPushMatrix();
 
+        float volume = scale.x() * scale.y() * scale.z();
+        if (volume < 30.0f && scale.x() < 6 && scale.y() < 6 && scale.z() < 6) {
+            glColor3f(0.0f, 1.0f, 0.0f);
+        } else {
+            glColor3f(1.0f, 1.0f, 1.0f);
+        }
+        GLUquadricObj *quadratic;
+        quadratic=gluNewQuadric();
+        glTranslatef(center.x(), center.y(), center.z());
+       // glScalef(scale.x(), scale.y(), scale.z());
+        gluCylinder(quadratic,0.6f,0.6f,2.0f,32,32); //draw cylinder
+        glPopMatrix();
+
+
+    }
+
+
+    Visualizer::~Visualizer() {}
 void Visualizer::OnNewObjectReceived(const Cloud& cloud, const int id) {
   std::cout<<"Now it runs in the Visualizer::OnNewObjectReceived function in the visualize.cpp"<<std::endl;
   lock_guard<mutex> guard(_cloud_mutex);
@@ -250,7 +267,6 @@ vector<Cloud> ObjectPtrStorer::object_clouds_me() const {
     return _obj_clouds_me;
 }
 
-
 void ObjectPtrStorer::OnNewObjectReceived(const std::vector<Cloud>& clouds,
                                           const int id) {
   //看起来好像是在这里收到了那个聚类的输出信息
@@ -277,5 +293,4 @@ if(i_senter==0) {
     _update_listener->onUpdate();//然后在这里就开始画图了
   }
 }
-
 }  // namespace depth_clustering

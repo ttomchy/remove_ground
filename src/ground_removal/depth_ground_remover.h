@@ -26,7 +26,6 @@
 #include "utils/cloud.h"
 #include "show_objects_moosmann.h"
 
-
 namespace depth_clustering {
 
 /**
@@ -69,15 +68,11 @@ class DepthGroundRemover : public AbstractClient<Cloud>,
   cv::Mat ZeroOutGround(const cv::Mat& image, const cv::Mat& angle_image,
                           const Radians& threshold) const;
 
-
   cv::Mat Ground_image(const cv::Mat& image, const cv::Mat& angle_image,
                        const Radians& threshold) const;
 
-
   cv::Mat NO_Ground_image(const cv::Mat& image, const cv::Mat& angle_image,
                          const Radians& threshold) const;
-
-
 
  protected:
   /**
@@ -89,15 +84,11 @@ class DepthGroundRemover : public AbstractClient<Cloud>,
    *
    * @return     depth image with 0 instead of ground pixels 返回的图像中已经完全不含有地面上面的像素点了。
    */
- // cv::Mat ZeroOutGround(const cv::Mat& image, const cv::Mat& angle_image,
-                    //    const Radians& threshold) const;
-
   cv::Mat ZeroOutGround_me(const cv::Mat& image, const cv::Mat& angle_image,
                           const Radians& threshold) const;
 
   cv::Mat ZeroOutGroundBFS(const cv::Mat& image, const cv::Mat& angle_image,
                            const Radians& threshold, int kernel_size) const;
-
   /**
    * @brief      create a help image with angle in radians written for each
    *             pixel 创建一个帮助图像，角度以弧度为单位编写像素
@@ -125,9 +116,9 @@ class DepthGroundRemover : public AbstractClient<Cloud>,
    * @param      column  [A column of an angle image]
    * @return     [a smoothed column]
    */
-
   cv::Mat ApplySavitskyGolaySmoothing(const cv::Mat& column, int window_size);
-  /**
+  cv::Mat bilateralFilter_me(const cv::Mat& image);
+    /**
    * @brief      Get line angle
    * @details    Given two depth values and their angles compute the angle of
    *             the line that they spawn in the sensor frame.
@@ -140,7 +131,6 @@ class DepthGroundRemover : public AbstractClient<Cloud>,
    */
   Radians GetLineAngle(const cv::Mat& depth_image, int col, int row_curr,
                        int row_neigh);
-
   /**
    * @brief      Repair zeros in the depth image
    *
@@ -162,6 +152,7 @@ class DepthGroundRemover : public AbstractClient<Cloud>,
   mutable int _counter = 0;
 };
 
+
 void consume_print_one( const cv::Mat& image,
                         const cv::Mat& angle_image,
                         const Radians& threshold);
@@ -169,6 +160,7 @@ void consume_print_one( const cv::Mat& image,
 void consume_print_two( const cv::Mat& image,
                         const cv::Mat& angle_image,
                         const Radians& threshold);
+
 cv::Mat ZeroOutGround_two(const cv::Mat& image,
                           const cv::Mat& angle_image,
                           const Radians& threshold);
@@ -176,20 +168,7 @@ cv::Mat ZeroOutGround_two(const cv::Mat& image,
 cv:: Mat ZeroOutGround_me_two(const cv::Mat& image,
                               const cv::Mat& angle_image,
                               const Radians& threshold);
-
-void consume_thread_one(const cv::Mat& depth_image,
-                    const Radians& threshold);
-void consume_thread_two(const cv::Mat& depth_image,
-                        const Radians& threshold);
-
-cv::Mat ZeroOutGround_origin(const cv::Mat& image,
-                         const cv::Mat& angle_image,
-                         const Radians& threshold);
-cv::Mat CreateAngleImage_me(const cv:: Mat& depth_image);
-cv::Mat RepairDepth_me(const cv::Mat& depth_image);
-cv::Mat ApplySavitskyGolaySmoothing_me(const cv::Mat& image,
-                                       int window_size);
-cv::Mat GetUniformKernel_me(int window_size, int type = CV_32F);
-cv::Mat GetSavitskyGolayKernel_me(int window_size);
 }  // namespace depth_clustering
 #endif  // SRC_GROUND_REMOVAL_DEPTH_GROUND_REMOVER_H_
+
+

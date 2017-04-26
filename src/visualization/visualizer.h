@@ -87,6 +87,8 @@ class Visualizer : public QGLViewer,
   void DrawCloud(const Cloud& cloud);
   ObjectPtrStorer* object_clouds_client() { return &_cloud_obj_storer; }
   void draw() override;
+  void DrawCube_mecly(const Eigen::Vector3f& center,
+                      const Eigen::Vector3f& scale);
  protected:
 
   void init() override;
@@ -98,8 +100,6 @@ class Visualizer : public QGLViewer,
   bool _updated;
 
   ObjectPtrStorer _cloud_obj_storer;
-
-
   Cloud _cloud;
   mutable std::mutex _cloud_mutex;
 };

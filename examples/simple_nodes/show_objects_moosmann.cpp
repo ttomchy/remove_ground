@@ -78,33 +78,48 @@ void ReadData(const Radians& angle_tollerance, const string& in_path
     std::cout<<" Now it runs in the product_thread OnNewObjectReceived function  in the ground_remove.cpp!"<<std::endl;
 
     fprintf(stderr, "INFO: running on Moosman data\n");
-   // sleep(2);
     auto image_reader =
             FolderReader(in_path, ".png", FolderReader::Order::SORTED);
     auto config_reader = FolderReader(in_path, "img.cfg");
 
     auto proj_params_ptr =
             ProjectionParams::FromConfigFile(config_reader.GetNextFilePath());
+   // while(1) {
+            for (const auto& path : image_reader.GetAllFilePaths()) {
 
-    for (const auto& path : image_reader.GetAllFilePaths()) {\
+                m_mux.lock();
+                auto depth_image = MatFromDepthPng(path);
 
-        m_mux.lock();
-        auto depth_image = MatFromDepthPng(path);
-        no_gnd_img.key=depth_image;
-        image_buff.push_front(no_gnd_img);
+                no_gnd_img.key = depth_image;
+                image_buff.push_front(no_gnd_img);
+                int image_num = image_buff.size();
+                ROS_WARN("product one image ");
+                ROS_WARN("the size of product queue %d ", image_num);
+                //  sprintf(scan_num, "%s%d%s", ".//result//scan_image//scan", ++scan_i, ".png");
+                //  cv::imwrite(scan_num,depth_image);
+                m_mux.unlock();
 
-        int image_num=image_buff.size();
 
-        ROS_WARN ("product one image ");
-        ROS_WARN("the size of product queue %d ",image_num);
-      //  sprintf(scan_num, "%s%d%s", ".//result//scan_image//scan", ++scan_i, ".png");
-      //  cv::imwrite(scan_num,depth_image);
-        m_mux.unlock();
-    }
+
+/*
+
+                    char c = cv::waitKey(1000);
+                    if( c >=0 )
+                    {
+                        ROS_WARN("reveived the key board");
+                       // break;
+                        cv::waitKey(0);
+                    }
+                }
+
+
+*/
+
+            }
+
 
 }
 void consume_thread(const Radians& angle_tollerance,const string& in_path ,Visualizer* visualizer){
-
     m_mux.lock();
     auto image_reader =
             FolderReader(in_path, ".png", FolderReader::Order::SORTED);
@@ -122,8 +137,6 @@ void consume_thread(const Radians& angle_tollerance,const string& in_path ,Visua
     depth_ground_remover.AddClient(&clusterer);
     clusterer.AddClient(visualizer->object_clouds_client());
 
-
-
     while (true) {
         if (image_buff.empty()) {
 
@@ -132,51 +145,21 @@ void consume_thread(const Radians& angle_tollerance,const string& in_path ,Visua
         }
         read_depth_img = image_buff.back();
         int image_num= image_buff.size();
-
         image_buff.pop_back();
         ROS_ERROR("consume one image ");
         ROS_ERROR("the size of image_buff queue %d ",image_num);
-
         auto cloud_ptr = Cloud::FromImage(read_depth_img.key, *proj_params_ptr);
-
-        /*
-        if (image_buff_before.empty()) {
-           std::cout<<" the image_buff_before is empty !!! "<<std::endl;
-        }
-
-        else {
-
-            no_ground_img = image_buff_before.back();
-            auto cloud_ptr_me = Cloud::FromImage(no_ground_img.key, *proj_params_ptr);
-
-            //  auto cloud_ptr_me = Cloud::FromImage(read_depth_img.key, *proj_params_ptr);
-        */
             time_utils::Timer timer;
             std::cout
                     << "Now it run in the show_objects_moosmann.cpp  before the visualizer->OnNewObjectReceived(*cloud_ptr, 0); "
                     << std::endl;
              visualizer->OnNewObjectReceived(*cloud_ptr, 0);
-
-           // visualizer->OnNewObjectReceived(*cloud_ptr_me, 0);
-            // sleep(1);
-            // visualizer->DrawCloud(*cloud_ptr);
-            /*
-            for (const auto& point : cloud_ptr->points()) {
-                // glVertex3f(point.x(),point.y(),point.z());//这里是画出所有的点云数据
-                std::cout<<" the value of the point.x() is  "<< point.x()<<std::endl;
-                std::cout<<" the value of the point.y() is  "<< point.y()<<std::endl;
-                std::cout<<" the value of the point.z() is  "<< point.z()<<std::endl;
-
-            }
-            */
             std::cout
                     << "Now it run in the show_objects_moosmann.cpp  before the  depth_ground_remover.OnNewObjectReceived(*cloud_ptr, 0); "
                     << std::endl;
             depth_ground_remover.OnNewObjectReceived(*cloud_ptr, 0);
-      //  }
     }
 }
-
 int main(int argc, char* argv[]) {
 
     TCLAP::CmdLine cmd(
@@ -202,31 +185,23 @@ int main(int argc, char* argv[]) {
     ROS_WARN("TEST");
 
     QApplication application(argc, argv);
-    // visualizer should be created from a gui thread
+   // visualizer should be created from a gui thread
     Visualizer visualizer;
     visualizer.show();
-   // visualizer.show();
 
 
+           // create and run loader thread
+           std::cout << " Now it runs before the load_thread ！" << std::endl;
+           std::thread loader_thread(ReadData, angle_tollerance, in_path);
+           std::cout << " Now it runs after the load_thread ！" << std::endl;
+           std::thread process_img(consume_thread, angle_tollerance, in_path, &visualizer);
+           //if we close the qt application we will be here
+           auto exit_code = application.exec();
+           //join thread after the application is dead
+           loader_thread.join();
+           process_img.join();
+           //img_cluster_thread.join();
+           return exit_code;
 
-   // visualizer_me.show();
-
-
-
-    // create and run loader thread
-    std::cout<<" Now it runs before the load_thread ！"<<std::endl;
-    std::thread loader_thread(ReadData , angle_tollerance, in_path );
-    std::cout<<" Now it runs after the load_thread ！"<<std::endl;
-    std::thread process_img(consume_thread, angle_tollerance,in_path,&visualizer);
-
-   //std::thread img_cluster_thread(cluster_thread, angle_tollerance,in_path,&visualizer);
-   //if we close the qt application we will be here
-    auto exit_code = application.exec();
-
-   //join thread after the application is dead
-    loader_thread.join();
-    process_img.join();
-   //img_cluster_thread.join();
-    return exit_code;
 
 }
