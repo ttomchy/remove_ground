@@ -44,9 +44,7 @@ void Visualizer::draw() {
   std::cout<<"Now it runs in the Visualizer::draw() function in the visualize.cpp"<<std::endl;
   lock_guard<mutex> guard(_cloud_mutex);//c++新特点，会自动解锁
 
-
-
-    DrawCloud(_cloud);//在这里画出所有的点云，从读取的图像哪里得到的深度图
+  DrawCloud(_cloud);//在这里画出所有的点云，从读取的图像哪里得到的深度图
   for (const auto& cluster : _cloud_obj_storer.object_clouds()) {
     Eigen::Vector3f center = Eigen::Vector3f::Zero();
     Eigen::Vector3f extent = Eigen::Vector3f::Zero();
@@ -89,12 +87,12 @@ void Visualizer::draw() {
                     std::max(max_point.y(), point.y()),
                     std::max(max_point.z(), point.z());
         }
-      center_me /= cluster_me.size();
+        center_me /= cluster_me.size();
         if (min_point.x() < max_point.x()) {
             extent_me = max_point - min_point;
         }
-       // DrawCube_me(center_me, extent_me);//在这里是把障碍物的用方框画出来
-      DrawCube_mecly(center_me, extent_me);
+        DrawCube_me(center_me, extent_me);//在这里是把障碍物的用方框画出来
+ //     DrawCube_mecly(center_me, extent_me);
   }
    std::cout<<"Now it runs in the end of Visualizer::draw() function in the visualize.cpp"<<std::endl;
 }
@@ -122,7 +120,7 @@ void Visualizer::DrawCube(const Eigen::Vector3f& center,
   glTranslatef(center.x(), center.y(), center.z());
   glScalef(scale.x(), scale.y(), scale.z());
   float volume = scale.x() * scale.y() * scale.z();
-  if (volume < 30.0f && scale.x() < 6 && scale.y() < 6 && scale.z() < 6) {
+  if (volume < 80.0f && scale.x() < 6 && scale.y() < 6 && scale.z() < 6) {
    // glColor3f(0.0f, 0.2f, 0.9f);
     glColor3f(1.0f, 0.0f, 0.0f);
     glLineWidth(4.0f);
@@ -174,7 +172,7 @@ void Visualizer::DrawCube_me(const Eigen::Vector3f& center,
     glTranslatef(center.x(), center.y(), center.z());//移动坐标系,直到移动到这些位置为止。
     glScalef(scale.x(), scale.y(), scale.z());
     float volume = scale.x() * scale.y() * scale.z();
-    if (volume < 30.0f && scale.x() < 6 && scale.y() < 6 && scale.z() < 6) {
+    if (volume < 80.0f && scale.x() < 6 && scale.y() < 6 && scale.z() < 6) {
         glColor3f(0.0f, 1.0f, 0.0f);
         glLineWidth(4.0f);
     } else {

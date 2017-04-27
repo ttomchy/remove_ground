@@ -117,7 +117,7 @@ class AngleDiffPrecomputed : public AbstractDiff {
    */
 
   inline bool SatisfiesThreshold(float angle, float threshold) const override {
-    std::cout<<"Now it runs int the angle anglediff.h"<<std::endl;
+    std::cout<<"Now it runs int the SatisfiesThreshold angle anglediff.h"<<std::endl;
     return angle > threshold;
   }
 

@@ -82,12 +82,19 @@ float AngleDiff::ComputeAlpha(const PixelCoord& current,
     return _col_alphas.back();
   }
   if (current.row < neighbor.row) {
+
     return _row_alphas[current.row];
-  } else if (current.row > neighbor.row) {
+  }
+  else if (current.row > neighbor.row) {
+
     return _row_alphas[neighbor.row];
-  } else if (current.col < neighbor.col) {
+  }
+  else if (current.col < neighbor.col) {
+
     return _col_alphas[current.col];
-  } else if (current.col > neighbor.col) {
+  }
+  else if (current.col > neighbor.col) {
+
     return _col_alphas[neighbor.col];
   }
   return 0;
@@ -137,8 +144,12 @@ float AngleDiffPrecomputed::DiffAt(const PixelCoord& from,
   throw std::runtime_error("Asking for difference of same pixels.");
 }
 
+
+
+
+
 cv::Mat AngleDiffPrecomputed::Visualize() const {
- std::cout<<" Now it runs in the Visualize function it is in the angle_diff.cpp !"<<std::endl;
+ std::cout<<" Now it runs in the  AngleDiffPrecomputed::Visualize function it is in the angle_diff.cpp !"<<std::endl;
   cv::Mat colors = cv::Mat::zeros(_beta_rows.rows, _beta_rows.cols, CV_8UC3);
 
   float max_angle_deg = 90.0f;

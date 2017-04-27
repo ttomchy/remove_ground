@@ -51,17 +51,18 @@ class LinearImageLabeler : public AbstractImageLabeler {
       : AbstractImageLabeler(depth_image, params, angle_threshold) {
     // this can probably be done at compile time
     int16_t counter = 0;
-    std::cout<<" now it it in the liner_image_function the value of STEP_ROW is :"<<STEP_ROW <<std::endl;
-    std::cout<<"now it it in the liner_image_function the value of STEP_COL; is :"<< STEP_COL<<std::endl;
+    std::cout<<" in the liner_iamge_labler.h now it it in the liner_image_function the value of STEP_ROW is :"<<STEP_ROW <<std::endl;
+    std::cout<<"in the liner_iamge_labler.h now it it in the liner_image_function the value of STEP_COL; is :"<< STEP_COL<<std::endl;
     for (int16_t r = STEP_ROW; r > 0; --r) {
       //std::cout<<"Now it runs in the for STEP_ROW loop it is in the liner_image_lable.h"<<std::endl;
       //from here it turn into the pixelcoord.h
       Neighborhood[counter++] = PixelCoord(-r, 0);
+    //  std::cout<<"the value of the is "<<std::endl;
       Neighborhood[counter++] = PixelCoord(r, 0);
     }
     for (int16_t c = STEP_COL; c > 0; --c) {
       Neighborhood[counter++] = PixelCoord(0, -c);
-      Neighborhood[counter++] = PixelCoord(0, c);
+      Neighborhood[counter++] = PixelCoord(0, c);//在这里定义四邻域　分别为上下左右。
     }
   }
   virtual ~LinearImageLabeler() {}
@@ -88,7 +89,7 @@ class LinearImageLabeler : public AbstractImageLabeler {
       // copy the current coordinate
       const PixelCoord current = labeling_queue.front();
       labeling_queue.pop();
-      uint16_t current_label = LabelAt(current);
+      uint16_t current_label = LabelAt(current);//get the lable of the current pixel value
       if (current_label > 0) {
         // we have already labeled this point. No need to add it.
         continue;
@@ -97,38 +98,34 @@ class LinearImageLabeler : public AbstractImageLabeler {
       SetLabel(current, label);
 
       // check the depth
-      auto current_depth = DepthAt(current);
-      if (current_depth < 0.001f) {
+      auto current_depth = DepthAt(current);//get the depth of the current pixel value
+      if (current_depth < 0.001f) { //if the value is too small ,we just consider it is the ground .
         // depth of this point is wrong, so don't bother adding it to queue
         continue;
       }
 
-
       for (const auto& step : Neighborhood) {
-        PixelCoord neighbor = current + step;
-        if (neighbor.row < 0 || neighbor.row >= _label_image.rows) {
-          // point doesn't fit
-          continue;
-        }
-        // if we just went over the borders in horiz direction - wrap around
-        neighbor.col = WrapCols(neighbor.col);
-        uint16_t neigh_label = LabelAt(neighbor);
-        if (neigh_label > 0) {
-          // we have already labeled this one
-          continue;
-        }
 
-        auto diff = diff_helper->DiffAt(current, neighbor);
-     //  std::cout<<"no problem on the top ! in the lablecomponent"<<std::endl;
-        if (diff_helper->SatisfiesThreshold(diff, _radians_threshold)) {
-          labeling_queue.push(neighbor);
-        }
+          PixelCoord neighbor = current + step;
+          if (neighbor.row < 0 || neighbor.row >= _label_image.rows) {
+            // point doesn't fit
+            continue;//如果还是还在这个在图像范围之内的话，还是需要进行处理的，否则的话需要进行标记判别是哪个
+          }
+          // if we just went over the borders in horiz direction - wrap around
+          neighbor.col = WrapCols(neighbor.col);//这里是在处理一些简单的边界情况
+          uint16_t neigh_label = LabelAt(neighbor);
+          if (neigh_label > 0) {
+            // we have already labeled this one//看一下周围邻居的lable
+            continue;
+          }
+          auto diff = diff_helper->DiffAt(current, neighbor);
+       //  std::cout<<"no problem on the top ! in the lablecomponent"<<std::endl;
+          if (diff_helper->SatisfiesThreshold(diff, _radians_threshold)) {
+            labeling_queue.push(neighbor);
+          }
       }
-
     }
-
   }
-
   /**
    * @brief      Gets depth value at pixel
    *
@@ -167,12 +164,17 @@ class LinearImageLabeler : public AbstractImageLabeler {
   int16_t WrapCols(int16_t col) const {
     // we allow our space to fold around cols
     if (col < 0) {
+     // std::cout<<" the value of the col is smaller than 0;and the value of it is :"<<col<<std::endl;
+    //  std::cout<<" the value of the col + _label_image.colsis :"<<col + _label_image.cols<<std::endl;
       return col + _label_image.cols;
     }
     if (col >= _label_image.cols) {
+     // std::cout<<"the value of the cols is larger than the _lable_image.cols,and the value of it is :"<<col<<std::endl;
+     // std::cout<<" the value of thecol - _label_image.cols :"<<col - _label_image.cols<<std::endl;
       return col - _label_image.cols;
     }
-    return col;
+    //std::cout<<"the value of the col is :"<<col<<std::endl;
+    return col; //否则的话就返回当前的列的值　
   }
 
   /**

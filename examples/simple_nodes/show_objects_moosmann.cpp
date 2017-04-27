@@ -61,7 +61,7 @@ int i_me_remove_gnd_img=0;
 char image_name[size];
 using namespace depth_clustering;
 
-int min_cluster_size = 20;
+int min_cluster_size = 50;
 int max_cluster_size = 100000;
 
 int scan_i=0;
@@ -75,7 +75,8 @@ void ReadData(const Radians& angle_tollerance, const string& in_path
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
     // now load the data
-    std::cout<<" Now it runs in the product_thread OnNewObjectReceived function  in the ground_remove.cpp!"<<std::endl;
+    std::cout << " Now it runs in the product_thread OnNewObjectReceived function  in the ground_remove.cpp!"
+              << std::endl;
 
     fprintf(stderr, "INFO: running on Moosman data\n");
     auto image_reader =
@@ -84,9 +85,16 @@ void ReadData(const Radians& angle_tollerance, const string& in_path
 
     auto proj_params_ptr =
             ProjectionParams::FromConfigFile(config_reader.GetNextFilePath());
-   // while(1) {
-            for (const auto& path : image_reader.GetAllFilePaths()) {
 
+    int value_me;
+
+    ROS_WARN("enter the key");
+   // while (std::cin >> value_me) {
+
+        for (const auto &path : image_reader.GetAllFilePaths()) {
+            ROS_WARN("runs after  the waitKey");
+            if (value_me != 0) {
+                value_me = value_me - 1;
                 m_mux.lock();
                 auto depth_image = MatFromDepthPng(path);
 
@@ -99,25 +107,16 @@ void ReadData(const Radians& angle_tollerance, const string& in_path
                 //  cv::imwrite(scan_num,depth_image);
                 m_mux.unlock();
 
-
-
-/*
-
-                    char c = cv::waitKey(1000);
-                    if( c >=0 )
-                    {
-                        ROS_WARN("reveived the key board");
-                       // break;
-                        cv::waitKey(0);
-                    }
-                }
-
-
-*/
+           //     if (value_me == 0) {
+           //         continue;
+           //     }
 
             }
 
 
+        }
+
+  //  }
 }
 void consume_thread(const Radians& angle_tollerance,const string& in_path ,Visualizer* visualizer){
     m_mux.lock();

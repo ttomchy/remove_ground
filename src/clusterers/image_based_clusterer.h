@@ -23,7 +23,8 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-
+#include <stdio.h>
+#include <opencv2/opencv.hpp>
 #include "communication/abstract_client.h"
 #include "communication/abstract_sender.h"
 #include "utils/cloud.h"
@@ -46,6 +47,8 @@ int  i_lable=0;
 test_define get_image_buff_before;
 test_define get_image_buff_after;
 int i_senter=0;
+int i_color_image=0;
+char color_img[6000];
 namespace depth_clustering {
 
 /**
@@ -69,7 +72,8 @@ class ImageBasedClusterer : public AbstractClusterer {
    */
   explicit ImageBasedClusterer(Radians angle_tollerance = 8_deg,
                                uint16_t min_cluster_size = 100,
-                               uint16_t max_cluster_size = 25000)
+                              // uint16_t max_cluster_size = 25000)
+                               uint16_t max_cluster_size = 15000)
       : AbstractClusterer(0.0, min_cluster_size, max_cluster_size),
         _counter(0),
         _angle_tollerance(angle_tollerance),
@@ -117,33 +121,35 @@ class ImageBasedClusterer : public AbstractClusterer {
       std::vector <Cloud> return_origin_cluster;
       std::vector <Cloud> return_me_cluster;
 
-          if ((image_buff_before.empty()) & (image_buff_after.empty())) {
-              std::cout << "one_of_the  image_buff_before or image_buff_after is empty!!! " << std::endl;
-              // continue;
-          } else {
-              get_image_buff_before = image_buff_before.back();
-              image_buff_before.pop_back();
-              std::cout << " the value of the get_image_buff_before.id is :" << get_image_buff_before.id << std::endl;
+      if ((image_buff_before.empty()) & (image_buff_after.empty())) {
+          std::cout << "one_of_the  image_buff_before or image_buff_after is empty!!! " << std::endl;
+          // continue;
+      } else {
+          get_image_buff_before = image_buff_before.back();
+          image_buff_before.pop_back();
+          std::cout << " the value of the get_image_buff_before.id is :" << get_image_buff_before.id << std::endl;
 
-              get_image_buff_after = image_buff_after.back();
-              image_buff_after.pop_back();
-              std::cout << " the value of the get_image_buff_after.id is :" << get_image_buff_after.id << std::endl;
+          get_image_buff_after = image_buff_after.back();
+          image_buff_after.pop_back();
+          std::cout << " the value of the get_image_buff_after.id is :" << get_image_buff_after.id << std::endl;
 
-              if (get_image_buff_before.id == get_image_buff_after.id) {
-                  return_origin_cluster = cluster_me(cloud, get_image_buff_before.key);
-                  return_me_cluster = cluster_me(cloud, get_image_buff_after.key);
-                  //在这里是第二个模块聚类的输出结果　
-                  std::cout << "int the image_based_clustered.h the value of  this->id() is :" << this->id()
-                            << std::endl;
-                  std::cout << "Now it runs in last of the image_based_clustered.h!!!" << std::endl;
-                  this->ShareDataWithAllClients(return_origin_cluster);
-                  ++i_senter;
-                  if (i_senter == 1) {
-                      this->ShareDataWithAllClients(return_me_cluster);
-                  }
+          if (get_image_buff_before.id == get_image_buff_after.id) {
+              return_origin_cluster = cluster_me(cloud, get_image_buff_before.key);
+              return_me_cluster = cluster_me(cloud, get_image_buff_after.key);
+              //在这里是第二个模块聚类的输出结果　
+              std::cout << "int the image_based_clustered.h the value of  this->id() is :" << this->id()
+                        << std::endl;
+              std::cout << "Now it runs in last of the image_based_clustered.h!!!" << std::endl;
+              this->ShareDataWithAllClients(return_origin_cluster);
+              ++i_senter;
+              if (i_senter == 1) {
+                  this->ShareDataWithAllClients(return_me_cluster);
               }
           }
+      }
   }
+    //在这里上面的话是进行获取数据和分析数据真正的处理数据是在这里。在下面这里。
+
 std::vector <Cloud> cluster_me(const Cloud& cloud,const cv::Mat& depth_image){
   time_utils::Timer timer;
   std::cout<<"now it is runs before the  LabelerT image_labeler(cloud.projection_  in the image_based_clustered.h !!! "<<std::endl;
@@ -151,7 +157,7 @@ std::vector <Cloud> cluster_me(const Cloud& cloud,const cv::Mat& depth_image){
                          cloud.projection_ptr()->params(), _angle_tollerance);
   std::cout<<"now it is runs after the  LabelerT image_labeler(cloud.projection_  in the image_based_clustered.h !!! "<<std::endl;
   std::cout<<"now it is runs before the  ComputeLabels function in the image_based_clustered.h !!! "<<std::endl;
-  image_labeler.ComputeLabels(_diff_type);
+  image_labeler.ComputeLabels(_diff_type);//其实所有的问题就出现在这里面
   std::cout<<"now it is runs after the  ComputeLabels function in the image_based_clustered.h !!! "<<std::endl;
   std::cout<<"now it is runs before the  image_labeler.GetLabelImage() function in the image_based_clustered.h !!! " <<std::endl;
   const cv::Mat* labels_ptr = image_labeler.GetLabelImage();
@@ -165,7 +171,49 @@ std::vector <Cloud> cluster_me(const Cloud& cloud,const cv::Mat& depth_image){
     _label_client->OnNewObjectReceived(*labels_ptr, this->id());
   }
 　　*/
-  // create 3d clusters from image labels
+
+
+
+    cv::RNG rng(time(0));
+
+    int num_channel_1[3000];
+    int num_channel_2[3000];
+    int num_channel_3[3000];
+
+    for (int  i=0;i<3000;i++){
+
+        num_channel_1[i]=rng.uniform(0,255);
+        num_channel_2[i]=rng.uniform(0,255);
+        num_channel_3[i]=rng.uniform(0,255);
+    }
+
+    cv::Mat colors = cv::Mat::zeros( labels_ptr->rows,labels_ptr->cols, CV_8UC3);
+    cv::Mat colors_binary = cv::Mat::zeros( labels_ptr->rows,labels_ptr->cols, CV_8UC1);
+    int max_value=0;
+    for (int row = 0; row < labels_ptr->rows; ++row) {
+         for (int col = 0; col < labels_ptr->cols; ++col) {
+
+            uint16_t label_me = labels_ptr->at<uint16_t>(row, col);
+
+             std::cout<<" the value of the lable_me is :"<<label_me<<std::endl;
+
+             if (label_me>=max_value){
+                 max_value=label_me;
+             }
+
+             colors.at<cv::Vec3b>(row,col)[0] =  num_channel_1[label_me];
+             colors.at<cv::Vec3b>(row,col)[1] =  num_channel_2[label_me];
+             colors.at<cv::Vec3b>(row,col)[2] =  num_channel_3[label_me];
+       }
+    }
+
+
+    std::cout<<" the value of the max_value is :"<<max_value<<std::endl;
+    sprintf(color_img,"%s%d%s", ".//result//color_image//color_img", ++i_color_image, ".png");
+    cv::imwrite(color_img,colors);
+
+
+    // create 3d clusters from image labels
   std::unordered_map<uint16_t, Cloud> clusters;
   for (int row = 0; row < labels_ptr->rows; ++row) {
     for (int col = 0; col < labels_ptr->cols; ++col) {
@@ -179,9 +227,11 @@ std::vector <Cloud> cluster_me(const Cloud& cloud,const cv::Mat& depth_image){
         // this is a default label, skip
         continue;
       }
+
       for (const auto& point_idx : point_container.points()) {
         const auto& point = cloud.points()[point_idx];
-        clusters[label].push_back(point);
+        clusters[label].push_back(point);//在这里进行压栈
+       // std::cout<<" the value of lable is :"<<label<<std::endl;
       }
     }
   }
