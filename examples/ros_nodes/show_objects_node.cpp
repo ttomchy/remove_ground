@@ -93,7 +93,7 @@ int main(int argc, char* argv[]) {
 
   auto depth_ground_remover = DepthGroundRemover(
       *proj_params_ptr, ground_remove_angle, smooth_window_size);
-
+  std::cout<<"Now it runs int the show_object_node .cpp "<<std::endl;
   ClustererT clusterer(angle_tollerance, min_cluster_size, max_cluster_size);
   clusterer.SetDiffType(DiffFactory::DiffType::ANGLES);
 
